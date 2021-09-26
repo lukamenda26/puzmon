@@ -4,18 +4,10 @@
 
 /*** 列挙型宣言 ***/
 enum {
-    FIRE,
-    WATER,
-    WIND,
-    EARTH
-};
-
-/*** グローバル定数の宣言 ***/
-const char TYPE_SYMBOLS[] = {
-    '$',
-    '~',
-    '@',
-    '#'
+    FIRE, // 1
+    WATER, // 6
+    WIND, // 2
+    EARTH // 3
 };
 
 /*** 構造体型宣言 ***/
@@ -27,24 +19,38 @@ typedef struct
     int type;
     int attack;
     int defence;
-} ENEMY_MONSTER;
+} EnemyMonster;
 
+typedef struct
+{
+    char symbol[1024];
+    int color;
+} Elements;
+
+/*** グローバル定数の宣言 ***/
+const Elements ELEMENTS[] = {
+    {'$', 1},
+    {'~', 6},
+    {'@', 2},
+    {'#', 3}
+};
 
 /*** プロトタイプ宣言 ***/
 
 /*** 関数宣言 ***/
-void doBattle(char* nameAdr)
+void doBattle(EnemyMonster* em)
 {
-    printf("%sが現れた！\n", nameAdr);
-    printf("%sを倒した！\n", nameAdr);
+    const char* symbol = ELEMENTS[(*em).type].symbol;
+    printf("%s%s%sが現れた！\n", symbol, (*em).name, symbol);
+    printf("%s%s%sを倒した！\n", symbol, (*em).name, symbol);
 }
 
 int goDungeon(char* person)
 {
     const int MONSTER_COUNT = 5;
     printf("%sはダンジョンに到着した。\n", person);
-    
-    ENEMY_MONSTER monster[MONSTER_COUNT] = {
+
+    EnemyMonster monster[MONSTER_COUNT] = {
         {"スライム",    100, 100, 1, 10, 5},
         {"ゴブリン",    200, 200, 3, 20, 15},
         {"オオコウモリ", 300, 300, 2, 30, 25},
@@ -54,7 +60,7 @@ int goDungeon(char* person)
 
     for (int i = 0; i < MONSTER_COUNT; i++)
     {
-        doBattle(monster[i].name);
+        doBattle(&monster[i]);
     }
     
     printf("%sはダンジョンを制覇した！\n", person);
