@@ -8,14 +8,35 @@
 /*** グローバル定数の宣言 ***/
 
 /*** 構造体型宣言 ***/
+typedef struct 
+{
+    char name[1024];
+} MONSTER;
+
 
 /*** プロトタイプ宣言 ***/
 
 /*** 関数宣言 ***/
-void goDungeon(char* person)
+int goDungeon(char* person)
 {
+    const int MONSTER_COUNT = 5;
     printf("%sはダンジョンに到着した。\n", person);
+    MONSTER monster[MONSTER_COUNT] = {
+        "スライム",
+        "ゴブリン",
+        "オオコウモリ",
+        "ウェアウルフ",
+        "ドラゴン"
+    };
+
+    for (int i = 0; i < MONSTER_COUNT; i++)
+    {
+        printf("%sが現れた！\n", monster[i].name);
+        printf("%sを倒した！\n", monster[i].name);
+    }
+    
     printf("%sはダンジョンを制覇した！\n", person);
+    return MONSTER_COUNT;
 }
 
 int main(int argc, char** argv)
@@ -30,10 +51,10 @@ int main(int argc, char** argv)
     
     printf("*** Puzzle & Monsters ***\n");
 
-    goDungeon(player);
+    int downedMonsterCount = goDungeon(player);
     
     printf("*** GAME CREARED! ***\n");
-    printf("倒したモンスター数＝5\n");
+    printf("倒したモンスター数＝%d\n", downedMonsterCount);
     
     return 0;
 }
