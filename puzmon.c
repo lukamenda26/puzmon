@@ -1,6 +1,7 @@
 /*=== puzmon0: ソースコードひな形 ===*/
 /*** インクルード宣言 ***/
 # include <stdio.h>
+# include <string.h>
 
 /*** 列挙型宣言 ***/
 enum {
@@ -19,13 +20,20 @@ typedef struct
     int type;
     int attack;
     int defence;
-} EnemyMonster;
+} Monster;
 
 typedef struct
 {
     char symbol[1024];
     int color;
 } Elements;
+
+typedef struct
+{
+    Monster* monsterAddr;
+    int MonsterCount;  
+} Dungeon;
+
 
 /*** グローバル定数の宣言 ***/
 const Elements ELEMENTS[] = {
@@ -36,23 +44,22 @@ const Elements ELEMENTS[] = {
 };
 
 /*** プロトタイプ宣言 ***/
-void printMonsterName(EnemyMonster*);
+void printMonsterName(Monster*);
 
 /*** 関数宣言 ***/
-void doBattle(EnemyMonster* em)
+void doBattle(Monster* monster)
 {
-    printMonsterName(em);
+    printMonsterName(monster);
     printf("が現れた！\n");
-    printMonsterName(em);
+    printMonsterName(monster);
     printf("を倒した！\n");
 }
 
 int goDungeon(char* person)
 {
-    const int MONSTER_COUNT = 5;
     printf("%sはダンジョンに到着した。\n", person);
 
-    EnemyMonster monster[MONSTER_COUNT] = {
+    Monster monster[] = {
         {"スライム",    100, 100, 1, 10, 5},
         {"ゴブリン",    200, 200, 3, 20, 15},
         {"オオコウモリ", 300, 300, 2, 30, 25},
@@ -60,13 +67,15 @@ int goDungeon(char* person)
         {"ドラゴン",    800, 800, 0, 50, 40}
     };
 
-    for (int i = 0; i < MONSTER_COUNT; i++)
+    Dungeon dungeon = {monster, 5};
+
+    for (int i = 0; i < dungeon.MonsterCount; i++)
     {
         doBattle(&monster[i]);
     }
     
     printf("%sはダンジョンを制覇した！\n", person);
-    return MONSTER_COUNT;
+    return dungeon.MonsterCount;
 }
 
 int main(int argc, char** argv)
@@ -90,9 +99,9 @@ int main(int argc, char** argv)
 }
 
 /*** ユーティリティ関数宣言 ***/
-void printMonsterName(EnemyMonster* em)
+void printMonsterName(Monster* monster)
 {
-    const char* symbol = ELEMENTS[(*em).type].symbol;
-    const int colorNum = ELEMENTS[(*em).type].color;
-    printf("\x1b[3%dm%s%s%s\x1b[0m", colorNum, symbol, (*em).name, symbol);
+    const char* symbol = ELEMENTS[(*monster).type].symbol;
+    const int colorNum = ELEMENTS[(*monster).type].color;
+    printf("\x1b[3%dm%s%s%s\x1b[0m", colorNum, symbol, (*monster).name, symbol);
 }
