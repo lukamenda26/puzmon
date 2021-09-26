@@ -29,10 +29,10 @@ typedef struct
 
 /*** グローバル定数の宣言 ***/
 const Elements ELEMENTS[] = {
-    {'$', 1},
-    {'~', 6},
-    {'@', 2},
-    {'#', 3}
+    {"$", 1},
+    {"~", 6},
+    {"@", 2},
+    {"#", 3}
 };
 
 /*** プロトタイプ宣言 ***/
@@ -41,8 +41,10 @@ const Elements ELEMENTS[] = {
 void doBattle(EnemyMonster* em)
 {
     const char* symbol = ELEMENTS[(*em).type].symbol;
-    printf("%s%s%sが現れた！\n", symbol, (*em).name, symbol);
-    printf("%s%s%sを倒した！\n", symbol, (*em).name, symbol);
+    const int colorNum = ELEMENTS[(*em).type].color;
+
+    printf("\x1b[3%dm%s%s%s\x1b[0mが現れた！\n", colorNum, symbol, (*em).name, symbol);
+    printf("\x1b[3%dm%s%s%s\x1b[0mを倒した！\n", colorNum, symbol, (*em).name, symbol);
 }
 
 int goDungeon(char* person)
