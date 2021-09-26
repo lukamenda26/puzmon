@@ -1,17 +1,33 @@
 /*=== puzmon0: ソースコードひな形 ===*/
 /*** インクルード宣言 ***/
-
 # include <stdio.h>
 
 /*** 列挙型宣言 ***/
+enum {
+    FIRE,
+    WATER,
+    WIND,
+    EARTH
+};
 
 /*** グローバル定数の宣言 ***/
+const char TYPE_SYMBOLS[] = {
+    '$',
+    '~',
+    '@',
+    '#'
+};
 
 /*** 構造体型宣言 ***/
 typedef struct 
 {
     char name[1024];
-} MONSTER;
+    int hp;
+    int maxHp;
+    int type;
+    int attack;
+    int defence;
+} ENEMY_MONSTER;
 
 
 /*** プロトタイプ宣言 ***/
@@ -27,12 +43,13 @@ int goDungeon(char* person)
 {
     const int MONSTER_COUNT = 5;
     printf("%sはダンジョンに到着した。\n", person);
-    MONSTER monster[MONSTER_COUNT] = {
-        "スライム",
-        "ゴブリン",
-        "オオコウモリ",
-        "ウェアウルフ",
-        "ドラゴン"
+    
+    ENEMY_MONSTER monster[MONSTER_COUNT] = {
+        {"スライム",    100, 100, 1, 10, 5},
+        {"ゴブリン",    200, 200, 3, 20, 15},
+        {"オオコウモリ", 300, 300, 2, 30, 25},
+        {"ウェアウルフ", 400, 400, 2, 40, 30},
+        {"ドラゴン",    800, 800, 0, 50, 40}
     };
 
     for (int i = 0; i < MONSTER_COUNT; i++)
