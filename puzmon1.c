@@ -38,8 +38,6 @@ int goDungeon(char* person)
     for (int i = 0; i < MONSTER_COUNT; i++)
     {
         doBattle(monster[i].name);
-        // printf("%sが現れた！\n", monster[i].name);
-        // printf("%sを倒した！\n", monster[i].name);
     }
     
     printf("%sはダンジョンを制覇した！\n", person);
