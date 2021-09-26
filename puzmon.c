@@ -36,15 +36,15 @@ const Elements ELEMENTS[] = {
 };
 
 /*** プロトタイプ宣言 ***/
+void printMonsterName(EnemyMonster*);
 
 /*** 関数宣言 ***/
 void doBattle(EnemyMonster* em)
 {
-    const char* symbol = ELEMENTS[(*em).type].symbol;
-    const int colorNum = ELEMENTS[(*em).type].color;
-
-    printf("\x1b[3%dm%s%s%s\x1b[0mが現れた！\n", colorNum, symbol, (*em).name, symbol);
-    printf("\x1b[3%dm%s%s%s\x1b[0mを倒した！\n", colorNum, symbol, (*em).name, symbol);
+    printMonsterName(em);
+    printf("が現れた！\n");
+    printMonsterName(em);
+    printf("を倒した！\n");
 }
 
 int goDungeon(char* person)
@@ -90,3 +90,9 @@ int main(int argc, char** argv)
 }
 
 /*** ユーティリティ関数宣言 ***/
+void printMonsterName(EnemyMonster* em)
+{
+    const char* symbol = ELEMENTS[(*em).type].symbol;
+    const int colorNum = ELEMENTS[(*em).type].color;
+    printf("\x1b[3%dm%s%s%s\x1b[0m", colorNum, symbol, (*em).name, symbol);
+}
