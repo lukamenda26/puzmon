@@ -12,6 +12,11 @@
 /*** プロトタイプ宣言 ***/
 
 /*** 関数宣言 ***/
+void goDungeon(char* person)
+{
+    printf("%sはダンジョンに到着した。\n", person);
+    printf("%sはダンジョンを制覇した！\n", person);
+}
 
 int main(int argc, char** argv)
 {
@@ -24,8 +29,9 @@ int main(int argc, char** argv)
     }
     
     printf("*** Puzzle & Monsters ***\n");
-    printf("%sはダンジョンに到着した。\n", player);
-    printf("%sはダンジョンを制覇した！\n", player);
+
+    goDungeon(player);
+    
     printf("*** GAME CREARED! ***\n");
     printf("倒したモンスター数＝5\n");
     
