@@ -17,6 +17,12 @@ typedef struct
 /*** プロトタイプ宣言 ***/
 
 /*** 関数宣言 ***/
+void doBattle(char* nameAdr)
+{
+    printf("%sが現れた！\n", nameAdr);
+    printf("%sを倒した！\n", nameAdr);
+}
+
 int goDungeon(char* person)
 {
     const int MONSTER_COUNT = 5;
@@ -31,8 +37,9 @@ int goDungeon(char* person)
 
     for (int i = 0; i < MONSTER_COUNT; i++)
     {
-        printf("%sが現れた！\n", monster[i].name);
-        printf("%sを倒した！\n", monster[i].name);
+        doBattle(monster[i].name);
+        // printf("%sが現れた！\n", monster[i].name);
+        // printf("%sを倒した！\n", monster[i].name);
     }
     
     printf("%sはダンジョンを制覇した！\n", person);
