@@ -5,10 +5,10 @@
 
 /*** 列挙型宣言 ***/
 enum {
-    FIRE, // 1
-    WATER, // 6
-    WIND, // 2
-    EARTH // 3
+    FIRE,
+    WATER,
+    WIND,
+    EARTH
 };
 
 /*** 構造体型宣言 ***/
@@ -30,12 +30,20 @@ typedef struct
 
 typedef struct
 {
-    Monster* monsterAddr;
+    Monster* enemyAddr;
     int MonsterCount;  
 } Dungeon;
 
+typedef struct
+{
+    char* playerName;
+    Monster* partyMonsterAddr;
+} Party;
+
 
 /*** グローバル定数の宣言 ***/
+const int PARTY_MONSTER_COUNT = 4;
+
 const Elements ELEMENTS[] = {
     {"$", 1},
     {"~", 6},
@@ -47,6 +55,12 @@ const Elements ELEMENTS[] = {
 void printMonsterName(Monster*);
 
 /*** 関数宣言 ***/
+Party organizeParty(char* player, Monster* monster)
+{
+    Party party = {player, monster};
+    return party;
+}
+
 void doBattle(Monster* monster)
 {
     printMonsterName(monster);
@@ -59,19 +73,19 @@ int goDungeon(char* person)
 {
     printf("%sはダンジョンに到着した。\n", person);
 
-    Monster monster[] = {
-        {"スライム",    100, 100, 1, 10, 5},
-        {"ゴブリン",    200, 200, 3, 20, 15},
-        {"オオコウモリ", 300, 300, 2, 30, 25},
-        {"ウェアウルフ", 400, 400, 2, 40, 30},
-        {"ドラゴン",    800, 800, 0, 50, 40}
+    Monster enemyMonster[] = {
+        {"スライム",    100, 100, WATER, 10, 5},
+        {"ゴブリン",    200, 200, EARTH, 20, 15},
+        {"オオコウモリ", 300, 300, WIND, 30, 25},
+        {"ウェアウルフ", 400, 400, WIND, 40, 30},
+        {"ドラゴン",    800, 800, FIRE, 50, 40}
     };
 
-    Dungeon dungeon = {monster, 5};
+    Dungeon dungeon = {enemyMonster, 5};
 
     for (int i = 0; i < dungeon.MonsterCount; i++)
     {
-        doBattle(&monster[i]);
+        doBattle(&enemyMonster[i]);
     }
     
     printf("%sはダンジョンを制覇した！\n", person);
@@ -89,6 +103,14 @@ int main(int argc, char** argv)
     }
     
     printf("*** Puzzle & Monsters ***\n");
+
+    Monster partyMonster[] = {
+        {"朱雀", 150, 150, FIRE, 25, 10},
+        {"青龍", 150, 150, WIND, 15, 10},
+        {"白虎", 150, 150, EARTH, 20, 5},
+        {"玄武", 150, 150, WATER, 20, 15}
+    };
+    Party newParty = organizeParty(argv[1], partyMonster);
 
     int downedMonsterCount = goDungeon(player);
     
