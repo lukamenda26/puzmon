@@ -69,9 +69,9 @@ void doBattle(Monster* monster)
     printf("を倒した！\n");
 }
 
-int goDungeon(char* person)
+int goDungeon(Party party)
 {
-    printf("%sはダンジョンに到着した。\n", person);
+    printf("%sはダンジョンに到着した。\n", party.playerName);
 
     Monster enemyMonster[] = {
         {"スライム",    100, 100, WATER, 10, 5},
@@ -88,7 +88,7 @@ int goDungeon(char* person)
         doBattle(&enemyMonster[i]);
     }
     
-    printf("%sはダンジョンを制覇した！\n", person);
+    printf("%sはダンジョンを制覇した！\n", party.playerName);
     return dungeon.MonsterCount;
 }
 
@@ -112,7 +112,7 @@ int main(int argc, char** argv)
     };
     Party newParty = organizeParty(argv[1], partyMonster);
 
-    int downedMonsterCount = goDungeon(player);
+    int downedMonsterCount = goDungeon(newParty);
     
     printf("*** GAME CREARED! ***\n");
     printf("倒したモンスター数＝%d\n", downedMonsterCount);
