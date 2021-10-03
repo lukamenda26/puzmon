@@ -76,6 +76,7 @@ void showParty(Party party)
     for (int i = 0; i < PARTY_MONSTER_COUNT; i++)
     {
         printMonsterName(&party.partyMonsterAddr[i]);
+        printf(" HP= %d 攻撃= %d 防御= %d\n", party.partyMonsterAddr[i].hp, party.partyMonsterAddr[i].attack, party.partyMonsterAddr[i].defence);
     }
     
     printf("-----------------------\n");
