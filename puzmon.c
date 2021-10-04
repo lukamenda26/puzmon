@@ -61,7 +61,7 @@ Party organizeParty(char* player, Monster* monster)
     return party;
 }
 
-void doBattle(Monster* monster)
+void doBattle(Monster* monster, Party party)
 {
     printMonsterName(monster);
     printf("が現れた！\n");
@@ -105,7 +105,7 @@ int goDungeon(Party party)
 
     for (int i = 0; i < dungeon.MonsterCount; i++)
     {
-        doBattle(&enemyMonster[i]);
+        doBattle(&enemyMonster[i], party);
     }
     
     printf("%sはダンジョンを制覇した！\n", party.playerName);
