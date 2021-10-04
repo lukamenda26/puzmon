@@ -61,7 +61,7 @@ Party organizeParty(char* player, Monster* monster)
     return party;
 }
 
-void doBattle(Monster* monster, Party party)
+void doBattle(Monster* monster)
 {
     printMonsterName(monster);
     printf("が現れた！\n");
@@ -105,7 +105,25 @@ int goDungeon(Party party)
 
     for (int i = 0; i < dungeon.MonsterCount; i++)
     {
-        doBattle(&enemyMonster[i], party);
+        doBattle(&enemyMonster[i]);
+
+        int remainingHp = 0;
+        for (int i = 0; i < PARTY_MONSTER_COUNT; i++)
+        {
+            remainingHp += party.partyMonsterAddr[i].hp;
+        }
+
+        if (remainingHp <= 0)
+        {
+            printf("%sはダンジョンから逃げ出した...\n", party.playerName);
+            return 0;
+            break;
+        }
+        else
+        {
+            printf( "%sはさらに奥へと進んだ。\n", party.playerName);
+        }
+        
     }
     
     printf("%sはダンジョンを制覇した！\n", party.playerName);
