@@ -61,10 +61,19 @@ Party organizeParty(char* player, Monster* monster)
     return party;
 }
 
-void doBattle(Monster* monster)
+void onPlayerTurn(Monster* monster, Party* party)
+{
+    const int DUMMY_DAMAGE = 80;
+    printf("【%sのターン】\n", (*party).playerName);
+    printf("ダミー攻撃で%dのダメージを与えた。\n", DUMMY_DAMAGE);
+    (*monster).hp -= DUMMY_DAMAGE;
+}
+
+void doBattle(Monster* monster, Party* party)
 {
     printMonsterName(monster);
     printf("が現れた！\n");
+    onPlayerTurn(monster, party);
     printMonsterName(monster);
     printf("を倒した！\n");
 }
@@ -105,7 +114,7 @@ int goDungeon(Party party)
 
     for (int i = 0; i < dungeon.MonsterCount; i++)
     {
-        doBattle(&enemyMonster[i]);
+        doBattle(&enemyMonster[i], &party);
 
         int remainingHp = 0;
         for (int i = 0; i < PARTY_MONSTER_COUNT; i++)
