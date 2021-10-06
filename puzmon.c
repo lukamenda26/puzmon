@@ -38,6 +38,9 @@ typedef struct
 {
     char* playerName;
     Monster* partyMonsterAddr;
+    int sumHp;
+    int sumMaxHp;
+    int avgDefence;
 } Party;
 
 
@@ -57,7 +60,28 @@ void printMonsterName(Monster*);
 /*** 関数宣言 ***/
 Party organizeParty(char* player, Monster* monster)
 {
-    Party party = {player, monster};
+    int sumHp = 0;
+    int sumMaxHp = 0;
+    int sumDefence = 0;
+    int avgDefence = 0;
+
+    for (int i = 0; i < PARTY_MONSTER_COUNT; i++)
+    {
+        sumHp += monster[i].hp;
+        sumMaxHp += monster[i].maxHp;
+        sumDefence += monster[i].defence;
+    }
+
+    avgDefence = sumDefence / PARTY_MONSTER_COUNT;
+
+    Party party = {
+        player,
+        monster,
+        sumHp,
+        sumMaxHp,
+        avgDefence
+    };
+
     return party;
 }
 
@@ -73,7 +97,14 @@ void doBattle(Monster* monster, Party* party)
 {
     printMonsterName(monster);
     printf("が現れた！\n");
-    onPlayerTurn(monster, party);
+    printf("\n");
+
+    do
+    {
+        onPlayerTurn(monster, party);
+    } while ((*monster).hp > 0);
+    
+    printf("\n");
     printMonsterName(monster);
     printf("を倒した！\n");
 }
@@ -89,18 +120,13 @@ void showParty(Party* party)
     }
     
     printf("-----------------------\n");
+    printf("\n");
 }
 
-int goDungeon(Party party)
+int goDungeon(Party* party)
 {
-    int sumHp = 0;
-    for (int i = 0; i < PARTY_MONSTER_COUNT; i++)
-    {
-        sumHp += party.partyMonsterAddr[i].hp;
-    }
-
-    printf("%sのパーティ(HP=%d)はダンジョンに到着した。\n", party.playerName, sumHp);
-    showParty(&party);
+    printf("%sのパーティ(HP=%d)はダンジョンに到着した。\n", party->playerName, party->sumHp);
+    showParty(party);
 
     Monster enemyMonster[] = {
         {"スライム",    100, 100, WATER, 10, 5},
@@ -114,28 +140,28 @@ int goDungeon(Party party)
 
     for (int i = 0; i < dungeon.MonsterCount; i++)
     {
-        doBattle(&enemyMonster[i], &party);
+        doBattle(&enemyMonster[i], party);
 
         int remainingHp = 0;
         for (int i = 0; i < PARTY_MONSTER_COUNT; i++)
         {
-            remainingHp += party.partyMonsterAddr[i].hp;
+            remainingHp += party->partyMonsterAddr[i].hp;
         }
 
         if (remainingHp <= 0)
         {
-            printf("%sはダンジョンから逃げ出した...\n", party.playerName);
+            printf("%sはダンジョンから逃げ出した...\n", party->playerName);
             return 0;
             break;
         }
         else
         {
-            printf( "%sはさらに奥へと進んだ。\n", party.playerName);
+            printf( "%sはさらに奥へと進んだ。\n\n", party->playerName);
         }
         
     }
     
-    printf("%sはダンジョンを制覇した！\n", party.playerName);
+    printf("%sはダンジョンを制覇した！\n", party->playerName);
     return dungeon.MonsterCount;
 }
 
@@ -159,7 +185,7 @@ int main(int argc, char** argv)
     };
     Party newParty = organizeParty(argv[1], partyMonster);
 
-    int downedMonsterCount = goDungeon(newParty);
+    int downedMonsterCount = goDungeon(&newParty);
     
     printf("*** GAME CREARED! ***\n");
     printf("倒したモンスター数＝%d\n", downedMonsterCount);
