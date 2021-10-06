@@ -78,14 +78,14 @@ void doBattle(Monster* monster, Party* party)
     printf("を倒した！\n");
 }
 
-void showParty(Party party)
+void showParty(Party* party)
 {
     printf("＜パーティ編成＞----------\n");
 
     for (int i = 0; i < PARTY_MONSTER_COUNT; i++)
     {
-        printMonsterName(&party.partyMonsterAddr[i]);
-        printf(" HP= %d 攻撃= %d 防御= %d\n", party.partyMonsterAddr[i].hp, party.partyMonsterAddr[i].attack, party.partyMonsterAddr[i].defence);
+        printMonsterName(&party->partyMonsterAddr[i]);
+        printf(" HP= %d 攻撃= %d 防御= %d\n", party->partyMonsterAddr[i].hp, party->partyMonsterAddr[i].attack, party->partyMonsterAddr[i].defence);
     }
     
     printf("-----------------------\n");
@@ -100,7 +100,7 @@ int goDungeon(Party party)
     }
 
     printf("%sのパーティ(HP=%d)はダンジョンに到着した。\n", party.playerName, sumHp);
-    showParty(party);
+    showParty(&party);
 
     Monster enemyMonster[] = {
         {"スライム",    100, 100, WATER, 10, 5},
