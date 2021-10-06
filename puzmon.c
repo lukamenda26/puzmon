@@ -1,4 +1,3 @@
-/*=== puzmon0: ソースコードひな形 ===*/
 /*** インクルード宣言 ***/
 # include <stdio.h>
 # include <string.h>
@@ -43,9 +42,17 @@ typedef struct
     int avgDefence;
 } Party;
 
+typedef struct
+{
+    Party* party;
+    Monster* enemyMonsterAddr;
+    char* gems;
+} BattleField;
+
 
 /*** グローバル定数の宣言 ***/
 const int PARTY_MONSTER_COUNT = 4;
+const int MAX_GEMS = 14;
 
 const Elements ELEMENTS[] = {
     {"$", 1},
