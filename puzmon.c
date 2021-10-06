@@ -89,8 +89,16 @@ void onPlayerTurn(Monster* monster, Party* party)
 {
     const int DUMMY_DAMAGE = 80;
     printf("【%sのターン】\n", (*party).playerName);
-    printf("ダミー攻撃で%dのダメージを与えた。\n", DUMMY_DAMAGE);
+    printf("ダミー攻撃で%dのダメージを与えた。\n\n", DUMMY_DAMAGE);
     (*monster).hp -= DUMMY_DAMAGE;
+}
+
+void onEnemyTurn(Monster* monster, Party* party)
+{
+    const int DUMMY_MY_DAMAGE = 20;
+    printf("【%sのターン】\n", (*monster).name);
+    printf("%dのダメージを受けた。\n\n", DUMMY_MY_DAMAGE);
+    (*party).sumHp -= DUMMY_MY_DAMAGE;
 }
 
 void doBattle(Monster* monster, Party* party)
@@ -102,11 +110,18 @@ void doBattle(Monster* monster, Party* party)
     do
     {
         onPlayerTurn(monster, party);
+        if ((*monster).hp <= 0)
+        {
+            break;
+        }
+        
+        onEnemyTurn(monster, party);
     } while ((*monster).hp > 0);
     
     printf("\n");
     printMonsterName(monster);
     printf("を倒した！\n");
+    printf("残HP:%d\n", party->sumHp);
 }
 
 void showParty(Party* party)
@@ -119,8 +134,7 @@ void showParty(Party* party)
         printf(" HP= %d 攻撃= %d 防御= %d\n", party->partyMonsterAddr[i].hp, party->partyMonsterAddr[i].attack, party->partyMonsterAddr[i].defence);
     }
     
-    printf("-----------------------\n");
-    printf("\n");
+    printf("-----------------------\n\n");
 }
 
 int goDungeon(Party* party)
