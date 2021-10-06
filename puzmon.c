@@ -1,6 +1,7 @@
 /*** インクルード宣言 ***/
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 
 /*** 列挙型宣言 ***/
 enum {
@@ -48,6 +49,7 @@ typedef struct
     Party* party;
     Monster* enemyMonsterAddr;
     char* gems;
+    int maxGemCount;
 } BattleField;
 
 
@@ -64,6 +66,8 @@ const Elements ELEMENTS[] = {
 
 /*** プロトタイプ宣言 ***/
 void printMonsterName(Monster*);
+void fillGems(char*, int);
+void printGems(char*, int);
 
 /*** 関数宣言 ***/
 Party organizeParty(char* player, Monster* monster)
@@ -158,24 +162,29 @@ int goDungeon(Party* party, Dungeon* dungeon)
     showParty(party);
 
     int defeatedMonsterCount = 0;
+    char gems[MAX_GEMS];
+
     for (int i = 0; i < (*dungeon).MonsterCount; i++)
     {
+        fillGems(gems, MAX_GEMS);
+        printGems(gems, MAX_GEMS);
+        BattleField newBattleField = {party, (*dungeon).enemyAddr, gems, MAX_GEMS};
         defeatedMonsterCount += doBattle(&dungeon->enemyAddr[i], party);
 
         if ((*party).sumHp <= 0)
         {
-            printf("%sはダンジョンから逃げ出した...\n", party->playerName);
+            printf("%sはダンジョンから逃げ出した...\n", (*party).playerName);
             return 0;
             break;
         }
         else
         {
-            printf( "%sはさらに奥へと進んだ。\n\n", party->playerName);
+            printf( "%sはさらに奥へと進んだ。\n\n", (*party).playerName);
         }
         
     }
     
-    printf("%sはダンジョンを制覇した！\n", party->playerName);
+    printf("%sはダンジョンを制覇した！\n", (*party).playerName);
     return defeatedMonsterCount;
 }
 
@@ -224,4 +233,24 @@ void printMonsterName(Monster* monster)
     const char* symbol = ELEMENTS[(*monster).type].symbol;
     const int colorNum = ELEMENTS[(*monster).type].color;
     printf("\x1b[3%dm%s%s%s\x1b[0m", colorNum, symbol, (*monster).name, symbol);
+}
+
+void fillGems(char* gems, int gemsCount)
+{
+    for (int i = 0; i < gemsCount; i++)
+    {
+        gems[i] = rand() % 4;
+    }
+}
+
+void printGems(char* gems, int gemsCount)
+{
+    int gemNum = 0;
+    for (int i = 0; i < gemsCount; i++)
+    {
+        gemNum = gems[i];
+        printf("%s ", ELEMENTS[gemNum].symbol);
+    }
+    printf("\n");
+    
 }
