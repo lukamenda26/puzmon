@@ -108,7 +108,7 @@ void onEnemyTurn(Monster* monster, Party* party)
     (*party).sumHp -= DUMMY_MY_DAMAGE;
 }
 
-void doBattle(Monster* monster, Party* party)
+int doBattle(Monster* monster, Party* party)
 {
     printMonsterName(monster);
     printf("が現れた！\n");
@@ -119,16 +119,18 @@ void doBattle(Monster* monster, Party* party)
         onPlayerTurn(monster, party);
         if ((*monster).hp <= 0)
         {
+            printf("\n");
+            printMonsterName(monster);
+            printf("を倒した！\n");
+            printf("残HP:%d\n", party->sumHp);
+            return 1;
             break;
         }
         
         onEnemyTurn(monster, party);
-    } while ((*monster).hp > 0);
-    
-    printf("\n");
-    printMonsterName(monster);
-    printf("を倒した！\n");
-    printf("残HP:%d\n", party->sumHp);
+    } while ((*monster).hp > 0 && (*party).sumHp > 0);
+
+    return 0;
 }
 
 void showParty(Party* party)
@@ -144,32 +146,17 @@ void showParty(Party* party)
     printf("-----------------------\n\n");
 }
 
-int goDungeon(Party* party)
+int goDungeon(Party* party, Dungeon* dungeon)
 {
     printf("%sのパーティ(HP=%d)はダンジョンに到着した。\n", party->playerName, party->sumHp);
     showParty(party);
 
-    Monster enemyMonster[] = {
-        {"スライム",    100, 100, WATER, 10, 5},
-        {"ゴブリン",    200, 200, EARTH, 20, 15},
-        {"オオコウモリ", 300, 300, WIND, 30, 25},
-        {"ウェアウルフ", 400, 400, WIND, 40, 30},
-        {"ドラゴン",    800, 800, FIRE, 50, 40}
-    };
-
-    Dungeon dungeon = {enemyMonster, 5};
-
-    for (int i = 0; i < dungeon.MonsterCount; i++)
+    int defeatedMonsterCount = 0;
+    for (int i = 0; i < (*dungeon).MonsterCount; i++)
     {
-        doBattle(&enemyMonster[i], party);
+        defeatedMonsterCount += doBattle(&dungeon->enemyAddr[i], party);
 
-        int remainingHp = 0;
-        for (int i = 0; i < PARTY_MONSTER_COUNT; i++)
-        {
-            remainingHp += party->partyMonsterAddr[i].hp;
-        }
-
-        if (remainingHp <= 0)
+        if ((*party).sumHp <= 0)
         {
             printf("%sはダンジョンから逃げ出した...\n", party->playerName);
             return 0;
@@ -183,7 +170,7 @@ int goDungeon(Party* party)
     }
     
     printf("%sはダンジョンを制覇した！\n", party->playerName);
-    return dungeon.MonsterCount;
+    return defeatedMonsterCount;
 }
 
 int main(int argc, char** argv)
@@ -206,7 +193,17 @@ int main(int argc, char** argv)
     };
     Party newParty = organizeParty(argv[1], partyMonster);
 
-    int downedMonsterCount = goDungeon(&newParty);
+    Monster enemyMonster[] = {
+        {"スライム",    100, 100, WATER, 10, 5},
+        {"ゴブリン",    200, 200, EARTH, 20, 15},
+        {"オオコウモリ", 300, 300, WIND, 30, 25},
+        {"ウェアウルフ", 400, 400, WIND, 40, 30},
+        {"ドラゴン",    800, 800, FIRE, 50, 40}
+    };
+
+    Dungeon dungeon = {enemyMonster, 5};
+
+    int downedMonsterCount = goDungeon(&newParty, &dungeon);
     
     printf("*** GAME CREARED! ***\n");
     printf("倒したモンスター数＝%d\n", downedMonsterCount);
