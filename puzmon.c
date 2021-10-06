@@ -29,6 +29,7 @@ typedef struct
 
 typedef struct
 {
+    char dungeonName[1024];
     Monster* enemyAddr;
     int MonsterCount;  
 } Dungeon;
@@ -92,6 +93,11 @@ Party organizeParty(char* player, Monster* monster)
     return party;
 }
 
+void showBattleField()
+{
+
+}
+
 void onPlayerTurn(Monster* monster, Party* party)
 {
     const int DUMMY_DAMAGE = 80;
@@ -148,7 +154,7 @@ void showParty(Party* party)
 
 int goDungeon(Party* party, Dungeon* dungeon)
 {
-    printf("%sのパーティ(HP=%d)はダンジョンに到着した。\n", party->playerName, party->sumHp);
+    printf("%sのパーティ(HP=%d)は%sダンジョンに到着した。\n", (*party).playerName, (*party).sumHp, (*dungeon).dungeonName);
     showParty(party);
 
     int defeatedMonsterCount = 0;
@@ -201,12 +207,13 @@ int main(int argc, char** argv)
         {"ドラゴン",    800, 800, FIRE, 50, 40}
     };
 
-    Dungeon dungeon = {enemyMonster, 5};
+    Dungeon dungeon = {"精霊の森", enemyMonster, 5};
 
     int downedMonsterCount = goDungeon(&newParty, &dungeon);
     
     printf("*** GAME CREARED! ***\n");
     printf("倒したモンスター数＝%d\n", downedMonsterCount);
+    printf("%c\n", 65);
     
     return 0;
 }
