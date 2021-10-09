@@ -70,7 +70,7 @@ void printMonsterName(Monster*);
 void fillGems(char*, int);
 void printGems(char*, int);
 void moveGem(char*, char*);
-void swapGem(int, char*, char*);
+void swapGem(char*, int, int, char*);
 
 /*** 関数宣言 ***/
 Party organizeParty(char* player, Monster* monster)
@@ -175,7 +175,6 @@ void onPlayerTurn(BattleField* battleField)
     }
 
     moveGem(command, battleField->gems);
-    printGems(battleField->gems, MAX_GEMS);
     
     printf("\n");
 
@@ -328,27 +327,41 @@ void printGems(char* gems, int gemsCount)
 
 void moveGem(char* fromTo, char* gems)
 {
-    int startGemNum = fromTo[0] - A_NUMBER;
-    int endGemNum = fromTo[1] - A_NUMBER;
-    
-    char gemOfDestination[1024];
-    strcpy(gemOfDestination, gems);
-    printf("%d\n", gemOfDestination[0]);
-    printf("%d\n", gems[0]);
+    int firstGemNum = fromTo[0] - A_NUMBER;
+    int secondGemNum = fromTo[1] - A_NUMBER;
 
-    gems[0] = gemOfDestination[1];
-    gems[1] = gemOfDestination[0];
+    char fomerGems[1024];
+    strcpy(fomerGems, &gems[firstGemNum]);
 
-    // swapGem(0, &gemsToSwap, gems);
-    // for (int i = startGemNum; i < endGemNum; i++)
-    // {
-    //     swapGem(i, &gemToSwap, gems);
-    // }
-    
+    swapGem(fomerGems, firstGemNum, secondGemNum, gems);
 }
 
-void swapGem(int gemNumToSwap, char* gemsToSwap, char* gems)
+void swapGem(char* fomerGems, int startGemNum, int endGemNum, char* gems)
 {
-    return;
-    // gems[gemNumToSwap + 1] = gemsToSwap;
+    // NOTE::formerGemsの参照元配列の先頭に、移動するgem情報が格納されている。
+
+    if(startGemNum < endGemNum)
+    {
+        printf("%c\n", fomerGems[0]);
+        // gemを右へ動かす。
+        for (int i = startGemNum; i < endGemNum; i++)
+        {
+            gems[i] = gems[i + 1];
+            gems[i + 1] = fomerGems[0];
+            printGems(gems, MAX_GEMS);
+            printf("\n");
+        }
+    }
+    else
+    {
+        printf("%c\n", fomerGems[0]);
+        // gemを左へ動かす。
+        for (int i = startGemNum; i > endGemNum; i--)
+        {
+            gems[i] = gems[i - 1];
+            gems[i - 1] = fomerGems[0];
+            printGems(gems, MAX_GEMS);
+            printf("\n");
+        }
+    }
 }
