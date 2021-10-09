@@ -49,7 +49,6 @@ typedef struct
     Party* party;
     Monster* enemyMonsterAddr;
     char* gems;
-    int maxGemCount;
 } BattleField;
 
 
@@ -102,10 +101,10 @@ void showBattleField()
 
 }
 
-void onPlayerTurn(Monster* monster, Party* party)
+void onPlayerTurn(BattleField* battleField)
 {
     const int DUMMY_DAMAGE = 80;
-    printf("【%sのターン】\n", (*party).playerName);
+    printf("【%sのターン】\n", (*battleField).party->playerName);
     printf("-----------------------------\n\n");
     printf("-----------------------------\n");
 
@@ -120,38 +119,38 @@ void onPlayerTurn(Monster* monster, Party* party)
      printf("-----------------------------\n");
 
     printf("ダミー攻撃で%dのダメージを与えた。\n\n", DUMMY_DAMAGE);
-    (*monster).hp -= DUMMY_DAMAGE;
+    (*battleField).enemyMonsterAddr->hp -= DUMMY_DAMAGE;
 }
 
-void onEnemyTurn(Monster* monster, Party* party)
+void onEnemyTurn(BattleField* battleField)
 {
     const int DUMMY_MY_DAMAGE = 20;
-    printf("【%sのターン】\n", (*monster).name);
+    printf("【%sのターン】\n", (*battleField).enemyMonsterAddr->name);
     printf("%dのダメージを受けた。\n\n", DUMMY_MY_DAMAGE);
-    (*party).sumHp -= DUMMY_MY_DAMAGE;
+    (*battleField).party->sumHp -= DUMMY_MY_DAMAGE;
 }
 
-int doBattle(Monster* monster, Party* party)
+int doBattle(BattleField* battleField)
 {
-    printMonsterName(monster);
+    printMonsterName((*battleField).enemyMonsterAddr);
     printf("が現れた！\n");
     printf("\n");
 
     do
     {
-        onPlayerTurn(monster, party);
-        if ((*monster).hp <= 0)
+        onPlayerTurn(battleField);
+        if ((*battleField).enemyMonsterAddr->hp <= 0)
         {
             printf("\n");
-            printMonsterName(monster);
+            printMonsterName((*battleField).enemyMonsterAddr);
             printf("を倒した！\n");
-            printf("残HP:%d\n", party->sumHp);
+            printf("残HP:%d\n",(*battleField).party->sumHp);
             return 1;
             break;
         }
         
-        onEnemyTurn(monster, party);
-    } while ((*monster).hp > 0 && (*party).sumHp > 0);
+        onEnemyTurn(battleField);
+    } while ((*battleField).enemyMonsterAddr->hp > 0 && (*battleField).party->sumHp > 0);
 
     return 0;
 }
@@ -181,8 +180,8 @@ int goDungeon(Party* party, Dungeon* dungeon)
     {
         fillGems(gems, MAX_GEMS);
         printGems(gems, MAX_GEMS);
-        BattleField newBattleField = {party, (*dungeon).enemyAddr, gems, MAX_GEMS};
-        defeatedMonsterCount += doBattle(&dungeon->enemyAddr[i], party);
+        BattleField newBattleField = {party, &dungeon->enemyAddr[i], gems};
+        defeatedMonsterCount += doBattle(&newBattleField);
 
         if ((*party).sumHp <= 0)
         {
