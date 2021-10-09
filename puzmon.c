@@ -69,6 +69,8 @@ const Elements ELEMENTS[] = {
 void printMonsterName(Monster*);
 void fillGems(char*, int);
 void printGems(char*, int);
+void moveGem(char*, char*);
+void swapGem(int, char*, char*);
 
 /*** 関数宣言 ***/
 Party organizeParty(char* player, Monster* monster)
@@ -106,6 +108,7 @@ bool checkValidCommand(char* command)
     {
         if (i < 2 && (command[i] < A_NUMBER || command[i] > (A_NUMBER + MAX_GEMS)))
         {
+            printf("%c\n", command[i]);
             returnBal = false;
             break;
         }
@@ -147,7 +150,6 @@ void onPlayerTurn(BattleField* battleField)
     
     printf("-----------------------------\n");
 
-    const int aNum = 65;
     int alphabetNum = 0;
 
     for (int i = 0; i < MAX_GEMS; i++)
@@ -164,13 +166,16 @@ void onPlayerTurn(BattleField* battleField)
 
     bool isVarid = checkValidCommand(command);
 
-    do
+    while (isVarid == false)
     {
         printf("不正な値です。表示されているアルファベットを2つ指定する必要があります。\n");
         printf("コマンド？ > ");
         scanf("%s", command);
         isVarid = checkValidCommand(command);
-    } while (isVarid == false);
+    }
+
+    moveGem(command, battleField->gems);
+    printGems(battleField->gems, MAX_GEMS);
     
     printf("\n");
 
@@ -325,4 +330,22 @@ void moveGem(char* fromTo, char* gems)
 {
     int startGemNum = fromTo[0] - A_NUMBER;
     int endGemNum = fromTo[1] - A_NUMBER;
+    // char gemToSwap = gems[startGemNum];
+    char gemsToSwap[1024];
+
+    gems[0] = gems[1];
+    gems[1] = gems[0];
+
+    // swapGem(0, &gemsToSwap, gems);
+    // for (int i = startGemNum; i < endGemNum; i++)
+    // {
+    //     swapGem(i, &gemToSwap, gems);
+    // }
+    
+}
+
+void swapGem(int gemNumToSwap, char* gemsToSwap, char* gems)
+{
+    return;
+    // gems[gemNumToSwap + 1] = gemsToSwap;
 }
