@@ -330,11 +330,14 @@ void moveGem(char* fromTo, char* gems)
 {
     int startGemNum = fromTo[0] - A_NUMBER;
     int endGemNum = fromTo[1] - A_NUMBER;
-    // char gemToSwap = gems[startGemNum];
-    char gemsToSwap[1024];
+    
+    char gemOfDestination[1024];
+    strcpy(gemOfDestination, gems);
+    printf("%d\n", gemOfDestination[0]);
+    printf("%d\n", gems[0]);
 
-    gems[0] = gems[1];
-    gems[1] = gems[0];
+    gems[0] = gemOfDestination[1];
+    gems[1] = gemOfDestination[0];
 
     // swapGem(0, &gemsToSwap, gems);
     // for (int i = startGemNum; i < endGemNum; i++)
