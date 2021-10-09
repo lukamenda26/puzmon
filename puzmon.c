@@ -56,6 +56,7 @@ typedef struct
 /*** グローバル定数の宣言 ***/
 const int PARTY_MONSTER_COUNT = 4;
 const int MAX_GEMS = 14;
+const int A_NUMBER = 65;
 
 const Elements ELEMENTS[] = {
     {"$", 1},
@@ -103,7 +104,7 @@ bool checkValidCommand(char* command)
 
     for (int i = 0; i < 3; i++)
     {
-        if (i < 2 && (command[i] < 65 || command[i] > (65 + MAX_GEMS)))
+        if (i < 2 && (command[i] < A_NUMBER || command[i] > (A_NUMBER + MAX_GEMS)))
         {
             returnBal = false;
             break;
@@ -151,7 +152,7 @@ void onPlayerTurn(BattleField* battleField)
 
     for (int i = 0; i < MAX_GEMS; i++)
     {
-        alphabetNum = aNum + i;
+        alphabetNum = A_NUMBER + i;
         printf("%c ", alphabetNum);
     }
     printf("\n");
@@ -292,6 +293,7 @@ int main(int argc, char** argv)
 }
 
 /*** ユーティリティ関数宣言 ***/
+
 void printMonsterName(Monster* monster)
 {
     const char* symbol = ELEMENTS[(*monster).type].symbol;
@@ -317,4 +319,10 @@ void printGems(char* gems, int gemsCount)
     }
     printf("\n");
     
+}
+
+void moveGem(char* fromTo, char* gems)
+{
+    int startGemNum = fromTo[0] - A_NUMBER;
+    int endGemNum = fromTo[1] - A_NUMBER;
 }
