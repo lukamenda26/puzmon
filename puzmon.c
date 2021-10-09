@@ -2,6 +2,7 @@
 # include <stdio.h>
 # include <string.h>
 # include <stdlib.h>
+# include <stdbool.h>
 
 /*** 列挙型宣言 ***/
 enum {
@@ -96,14 +97,34 @@ Party organizeParty(char* player, Monster* monster)
     return party;
 }
 
-void showBattleField()
+bool checkValidCommand(char* command)
 {
+    bool returnBal = true;
 
+    for (int i = 0; i < 3; i++)
+    {
+        if (i < 2 && (command[i] < 65 || command[i] > (65 + MAX_GEMS)))
+        {
+            returnBal = false;
+            break;
+        }
+        
+
+        if (i == 2 && command[i] != 0)
+        {
+            returnBal = false;
+            break;
+        }
+    }
+
+    return returnBal;
 }
 
 void onPlayerTurn(BattleField* battleField)
 {
     const int DUMMY_DAMAGE = 80;
+    char command[1024];
+
     printf("【%sのターン】\n", (*battleField).party->playerName);
     printf("-----------------------------\n\n");
     printf("         ");
@@ -119,16 +140,34 @@ void onPlayerTurn(BattleField* battleField)
     
     printf("-----------------------------\n");
 
-    const int a_num = 65;
-    int alphabet_num = 0;
+    const int aNum = 65;
+    int alphabetNum = 0;
+
     for (int i = 0; i < MAX_GEMS; i++)
     {
-        alphabet_num = a_num + i;
-        printf("%c ", alphabet_num);
+        alphabetNum = aNum + i;
+        printf("%c ", alphabetNum);
     }
     printf("\n");
     printGems((*battleField).gems, MAX_GEMS);
-     printf("-----------------------------\n");
+    printf("-----------------------------\n");
+
+    printf("コマンド？ > ");
+    scanf("%s", command);
+
+    bool isVarid = checkValidCommand(command);
+
+    if(isVarid == false)
+    {
+        printf("NG\n");
+    }
+    else
+    {
+        printf("OK\n");
+    }
+    printf("\n");
+    
+    
 
     printf("ダミー攻撃で%dのダメージを与えた。\n\n", DUMMY_DAMAGE);
     (*battleField).enemyMonsterAddr->hp -= DUMMY_DAMAGE;
