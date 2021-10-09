@@ -120,9 +120,15 @@ bool checkValidCommand(char* command)
     return returnBal;
 }
 
-void onPlayerTurn(BattleField* battleField)
+void doAttack(BattleField* battleField)
 {
     const int DUMMY_DAMAGE = 80;
+    printf("ダミー攻撃で%dのダメージを与えた。\n\n", DUMMY_DAMAGE);
+    (*battleField).enemyMonsterAddr->hp -= DUMMY_DAMAGE;
+}
+
+void onPlayerTurn(BattleField* battleField)
+{
     char command[1024];
 
     printf("【%sのターン】\n", (*battleField).party->playerName);
@@ -157,20 +163,17 @@ void onPlayerTurn(BattleField* battleField)
 
     bool isVarid = checkValidCommand(command);
 
-    if(isVarid == false)
+    do
     {
-        printf("NG\n");
-    }
-    else
-    {
-        printf("OK\n");
-    }
+        printf("不正な値です。表示されているアルファベットを2つ指定する必要があります。\n");
+        printf("コマンド？ > ");
+        scanf("%s", command);
+        isVarid = checkValidCommand(command);
+    } while (isVarid == false);
+    
     printf("\n");
-    
-    
 
-    printf("ダミー攻撃で%dのダメージを与えた。\n\n", DUMMY_DAMAGE);
-    (*battleField).enemyMonsterAddr->hp -= DUMMY_DAMAGE;
+    doAttack(battleField);
 }
 
 void onEnemyTurn(BattleField* battleField)
