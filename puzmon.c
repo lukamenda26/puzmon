@@ -131,6 +131,11 @@ void doAttack(BattleField* battleField)
     (*battleField).enemyMonsterAddr->hp -= DUMMY_DAMAGE;
 }
 
+void evaluateGems(BattleField* battleField)
+{
+    doAttack(battleField);
+}
+
 void onPlayerTurn(BattleField* battleField)
 {
     char command[1024];
@@ -178,7 +183,7 @@ void onPlayerTurn(BattleField* battleField)
     
     printf("\n");
 
-    doAttack(battleField);
+    evaluateGems(battleField);
 }
 
 void onEnemyTurn(BattleField* battleField)
@@ -342,7 +347,6 @@ void swapGem(char* fomerGems, int startGemNum, int endGemNum, char* gems)
 
     if(startGemNum < endGemNum)
     {
-        printf("%c\n", fomerGems[0]);
         // gemを右へ動かす。
         for (int i = startGemNum; i < endGemNum; i++)
         {
@@ -354,7 +358,6 @@ void swapGem(char* fomerGems, int startGemNum, int endGemNum, char* gems)
     }
     else
     {
-        printf("%c\n", fomerGems[0]);
         // gemを左へ動かす。
         for (int i = startGemNum; i > endGemNum; i--)
         {
