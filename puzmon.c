@@ -106,6 +106,17 @@ void onPlayerTurn(BattleField* battleField)
     const int DUMMY_DAMAGE = 80;
     printf("【%sのターン】\n", (*battleField).party->playerName);
     printf("-----------------------------\n\n");
+    printf("         ");
+    printMonsterName((*battleField).enemyMonsterAddr);
+    printf("\n        HP= %d / %d\n\n", (*battleField).enemyMonsterAddr->hp, (*battleField).enemyMonsterAddr->maxHp);
+
+    for (int i = 0; i < PARTY_MONSTER_COUNT; i++)
+    {
+        printMonsterName(&(*battleField).party->partyMonsterAddr[i]);
+        printf(" ");
+    }
+    printf("\n        HP= %d / %d\n", (*battleField).party->sumHp, (*battleField).party->sumMaxHp);
+    
     printf("-----------------------------\n");
 
     const int a_num = 65;
@@ -116,6 +127,7 @@ void onPlayerTurn(BattleField* battleField)
         printf("%c ", alphabet_num);
     }
     printf("\n");
+    printGems((*battleField).gems, MAX_GEMS);
      printf("-----------------------------\n");
 
     printf("ダミー攻撃で%dのダメージを与えた。\n\n", DUMMY_DAMAGE);
@@ -179,7 +191,6 @@ int goDungeon(Party* party, Dungeon* dungeon)
     for (int i = 0; i < (*dungeon).MonsterCount; i++)
     {
         fillGems(gems, MAX_GEMS);
-        printGems(gems, MAX_GEMS);
         BattleField newBattleField = {party, &dungeon->enemyAddr[i], gems};
         defeatedMonsterCount += doBattle(&newBattleField);
 
