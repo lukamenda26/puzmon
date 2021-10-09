@@ -106,6 +106,19 @@ void onPlayerTurn(Monster* monster, Party* party)
 {
     const int DUMMY_DAMAGE = 80;
     printf("【%sのターン】\n", (*party).playerName);
+    printf("-----------------------------\n\n");
+    printf("-----------------------------\n");
+
+    const int a_num = 65;
+    int alphabet_num = 0;
+    for (int i = 0; i < MAX_GEMS; i++)
+    {
+        alphabet_num = a_num + i;
+        printf("%c ", alphabet_num);
+    }
+    printf("\n");
+     printf("-----------------------------\n");
+
     printf("ダミー攻撃で%dのダメージを与えた。\n\n", DUMMY_DAMAGE);
     (*monster).hp -= DUMMY_DAMAGE;
 }
@@ -222,7 +235,6 @@ int main(int argc, char** argv)
     
     printf("*** GAME CREARED! ***\n");
     printf("倒したモンスター数＝%d\n", downedMonsterCount);
-    printf("%c\n", 65);
     
     return 0;
 }
@@ -249,7 +261,7 @@ void printGems(char* gems, int gemsCount)
     for (int i = 0; i < gemsCount; i++)
     {
         gemNum = gems[i];
-        printf("%s ", ELEMENTS[gemNum].symbol);
+        printf("\x1b[4%dm%s\x1b[49m ", ELEMENTS[gemNum].color, ELEMENTS[gemNum].symbol);
     }
     printf("\n");
     
