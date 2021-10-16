@@ -79,7 +79,7 @@ const Elements ELEMENTS[] = {
 
 /*** プロトタイプ宣言 ***/
 void printMonsterName(Monster*);
-void fillGems(char*, int);
+void fillGems(char*, int, int);
 void printGems(char*, int);
 void moveGem(int, int, char*, bool);
 void swapGem(char*, int, int, char*, bool);
@@ -145,13 +145,17 @@ void doAttack(BattleField* battleField)
 
 int checkBanishable(char* gems, BanishInfo* banishInfo)
 {
+    // 最後に3連続以上があった場合に必ず黒消しを行えるよう、
+    // 14つのgemの最後尾+1の配列格納場所に黒gemを格納。
+    gems[MAX_GEMS] = EMPTY;
+
     // 3連続以上の塊の存在数 ＝  返り値。
     int continuousChunkCount = 0;
 
     int initialNum = EMPTY;
     int continuousCount = 1;
 
-    for (int i = 1; i < MAX_GEMS; i++)
+    for (int i = 1; i <= MAX_GEMS; i++)
     {
         if (gems[i - 1] == gems[i])
         {
@@ -188,22 +192,12 @@ int shiftGems(int continuousChunkCount, BattleField* battleField, BanishInfo* ba
     // 最初に動かす黒gemの番号の初期値を設定。
     int moveGemNum = MAX_GEMS - 1;
 
+    // 最初に動く黒gemのアドレス指定用変数。
+    int movedGemCount = 0;
+
     for (int i = 0; i < continuousChunkCount; i++)
     {
-        for (int j = 0; j < banishInfo[i].continuousCount; j++)
-        {
-            *(banishInfo[i].startContinuousAddr + j) = 0;
-        }
-
-        printGems(battleField->gems, MAX_GEMS);
-        printf("\n");
-
-        doAttack(battleField);
-        
-        printGems(battleField->gems, MAX_GEMS);
-        printf("\n");
-
-        moveGemNum = (int)(banishInfo[i].startContinuousAddr + banishInfo[i].continuousCount - 1 - battleField->gems);
+        moveGemNum = (int)(banishInfo[i].startContinuousAddr + banishInfo[i].continuousCount - 1 - battleField->gems - movedGemCount);
 
         if (moveGemNum < gemDestinationNum)
         {
@@ -213,10 +207,12 @@ int shiftGems(int continuousChunkCount, BattleField* battleField, BanishInfo* ba
                 printGems(battleField->gems, MAX_GEMS);
                 printf("\n");
             }
-
-            // 黒gemの動かし先番号を書き換える。
-            gemDestinationNum = gemDestinationNum - banishInfo[i].continuousCount;
         }
+        
+        // 黒gemの動かし先番号を書き換える。
+        gemDestinationNum = gemDestinationNum - banishInfo[i].continuousCount;
+
+        movedGemCount += banishInfo[i].continuousCount;
 
         printf("最初に動かすgem：%d 次に黒gemが動くとしたら%d番目へ動く。\n", (int)(banishInfo[i].startContinuousAddr + banishInfo[i].continuousCount - 1 - battleField->gems), gemDestinationNum);
     }
@@ -234,8 +230,29 @@ void evaluateGems(BattleField* battleField)
 
     if (continuousChunkCount > 0)
     {
+        for (int i = 0; i < continuousChunkCount; i++)
+        {
+            for (int j = 0; j < banishInfo[i].continuousCount; j++)
+            {
+                *(banishInfo[i].startContinuousAddr + j) = 0;
+            }
+
+            printGems(battleField->gems, MAX_GEMS);
+            printf("\n");
+
+            doAttack(battleField);
+
+            printGems(battleField->gems, MAX_GEMS);
+            printf("\n");
+        }
+    
         // 黒gem（＝ブランク部分）を一番右側へ移動させる。
-        int newEndGemNum = shiftGems(continuousChunkCount, battleField, banishInfo);   
+        int newEndGemNum = shiftGems(continuousChunkCount, battleField, banishInfo);
+
+        // 黒gem部分を色付きgemで埋める。
+        fillGems(battleField->gems, (newEndGemNum + 1), MAX_GEMS);
+        printGems(battleField->gems, MAX_GEMS);
+        printf("\n");
     }
 }
 
@@ -346,7 +363,7 @@ int goDungeon(Party* party, Dungeon* dungeon)
 
     for (int i = 0; i < (*dungeon).MonsterCount; i++)
     {
-        fillGems(gems, MAX_GEMS);
+        fillGems(gems, 0, MAX_GEMS);
         BattleField newBattleField = {party, &dungeon->enemyAddr[i], gems};
         defeatedMonsterCount += doBattle(&newBattleField);
 
@@ -414,11 +431,11 @@ void printMonsterName(Monster* monster)
     printf("\x1b[3%dm%s%s%s\x1b[0m", colorNum, symbol, (*monster).name, symbol);
 }
 
-void fillGems(char* gems, int gemsCount)
+void fillGems(char* gems, int startGemNum, int endGemNum)
 {
-    for (int i = 0; i < gemsCount; i++)
+    for (int i = 0; i < endGemNum; i++)
     {
-        gems[i] = rand() % 4 + 2;
+        gems[i + startGemNum] = rand() % 4 + 2;
     }
 }
 
