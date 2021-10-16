@@ -81,8 +81,8 @@ const Elements ELEMENTS[] = {
 void printMonsterName(Monster*);
 void fillGems(char*, int);
 void printGems(char*, int);
-void moveGem(int, int, char*);
-void swapGem(char*, int, int, char*);
+void moveGem(int, int, char*, bool);
+void swapGem(char*, int, int, char*, bool);
 
 /*** 関数宣言 ***/
 Party organizeParty(char* player, Monster* monster)
@@ -151,8 +151,6 @@ int checkBanishable(char* gems, BanishInfo* banishInfo)
     int initialNum = EMPTY;
     int continuousCount = 1;
 
-    printf("%p\n", &initialNum);
-
     for (int i = 1; i < MAX_GEMS; i++)
     {
         if (gems[i - 1] == gems[i])
@@ -161,7 +159,6 @@ int checkBanishable(char* gems, BanishInfo* banishInfo)
             if (initialNum != gems[i])
             {
                 initialNum = gems[i];
-                printf("%d番目のループのinitialNum：%d gem:%d\n", i, initialNum, gems[i]);
             }
         }
         else
@@ -180,10 +177,6 @@ int checkBanishable(char* gems, BanishInfo* banishInfo)
         
     }
 
-    printf("タイプ：%d\n開始位置のアドレス：%p\n開始位置の値：%d\n連続数：%d\n", banishInfo[0].type, banishInfo[0].startContinuousAddr, gems[3], banishInfo[0].continuousCount);
-    printGems(gems, MAX_GEMS);
-    printf("\n");
-
     return continuousChunkCount;
 }
 
@@ -194,10 +187,15 @@ void evaluateGems(BattleField* battleField)
     BanishInfo banishInfo[maxContinuous];
 
     int continuousChunkCount = checkBanishable(battleField->gems, banishInfo);
-    printf("%d連続\n", continuousChunkCount);
 
     if (continuousChunkCount > 0)
     {
+        // 黒gemの動かす先 ＝ gem配列の一番右側。
+        int gemDestinationNum = MAX_GEMS - 1;
+
+        // 最初に動かす黒gemの番号の初期値を設定。
+        int moveGemNum = MAX_GEMS - 1;
+
         for (int i = 0; i < continuousChunkCount; i++)
         {
             for (int j = 0; j < banishInfo[i].continuousCount; j++)
@@ -205,8 +203,32 @@ void evaluateGems(BattleField* battleField)
                 *(banishInfo[i].startContinuousAddr + j) = 0;
             }
 
+            printGems(battleField->gems, MAX_GEMS);
+            printf("\n");
+
             doAttack(battleField);
+            
+            printGems(battleField->gems, MAX_GEMS);
+            printf("\n");
+
+            moveGemNum = (int)(banishInfo[i].startContinuousAddr + banishInfo[i].continuousCount - 1 - battleField->gems);
+
+            if (moveGemNum < gemDestinationNum)
+            {
+                for (int j = 0; j < banishInfo[i].continuousCount; j++)
+                {
+                    moveGem((moveGemNum - j), (gemDestinationNum - j), battleField->gems, false);
+                    printGems(battleField->gems, MAX_GEMS);
+                    printf("\n");
+                }
+
+                // 黒gemの動かし先番号を書き換える。
+                gemDestinationNum = gemDestinationNum - banishInfo[i].continuousCount;
+            }
+
+            printf("最初に動かすgem：%d 次に黒gemが動くとしたら%d番目へ動く。\n", (int)(banishInfo[i].startContinuousAddr + banishInfo[i].continuousCount - 1 - battleField->gems), gemDestinationNum);
         }
+        
     }
 }
 
@@ -256,9 +278,7 @@ void onPlayerTurn(BattleField* battleField)
     int startNum = command[0] - A_NUMBER;
     int endNum = command[1] - A_NUMBER;
 
-    moveGem(startNum, endNum, battleField->gems);
-    
-    printf("\n");
+    moveGem(startNum, endNum, battleField->gems, true);
 
     evaluateGems(battleField);
 }
@@ -407,15 +427,15 @@ void printGems(char* gems, int gemsCount)
     
 }
 
-void moveGem(int firstGemNum, int secondGemNum, char* gems)
+void moveGem(int firstGemNum, int secondGemNum, char* gems, bool isPrint)
 {
     char fomerGems[1024];
     strcpy(fomerGems, &gems[firstGemNum]);
 
-    swapGem(fomerGems, firstGemNum, secondGemNum, gems);
+    swapGem(fomerGems, firstGemNum, secondGemNum, gems, isPrint);
 }
 
-void swapGem(char* fomerGems, int startGemNum, int endGemNum, char* gems)
+void swapGem(char* fomerGems, int startGemNum, int endGemNum, char* gems, bool isPrint)
 {
     // NOTE::formerGemsの参照元配列の先頭に、移動するgem情報が格納されている。
 
@@ -426,8 +446,15 @@ void swapGem(char* fomerGems, int startGemNum, int endGemNum, char* gems)
         {
             gems[i] = gems[i + 1];
             gems[i + 1] = fomerGems[0];
-            printGems(gems, MAX_GEMS);
-            printf("\n");
+
+            // FixMe::gemを1つずつ右へずらす前提で実装していて、複数gemを一気にずらすことを
+            // 想定していなかったため、isPrintというフラグで1個ずつ動く様を表示する・しないを
+            // 指定するようにした。が、本来は複数gemが一気にずれるのが良い。
+            if(isPrint)
+            {
+                printGems(gems, MAX_GEMS);
+                printf("\n");
+            }
         }
     }
     else
@@ -437,8 +464,13 @@ void swapGem(char* fomerGems, int startGemNum, int endGemNum, char* gems)
         {
             gems[i] = gems[i - 1];
             gems[i - 1] = fomerGems[0];
-            printGems(gems, MAX_GEMS);
-            printf("\n");
+
+            // FieMe::上に同じ。
+            if(isPrint)
+            {
+                printGems(gems, MAX_GEMS);
+                printf("\n");
+            }
         }
     }
 }
