@@ -83,6 +83,7 @@ void fillGems(char*, int, int);
 void printGems(char*, int);
 void moveGem(int, int, char*, bool);
 void swapGem(char*, int, int, char*, bool);
+void doRecover(BattleField*, int);
 
 /*** 関数宣言 ***/
 Party organizeParty(char* player, Monster* monster)
@@ -240,7 +241,25 @@ void evaluateGems(BattleField* battleField)
             printGems(battleField->gems, MAX_GEMS);
             printf("\n");
 
-            doAttack(battleField);
+            if (banishInfo[i].type > 1)
+            {
+                for (int k = 0; k < PARTY_MONSTER_COUNT; k++)
+                {
+                    if (battleField->party->partyMonsterAddr[k].type == banishInfo[i].type)
+                    {
+                        printMonsterName(&battleField->party->partyMonsterAddr[k]);
+                        printf("の攻撃!!\n");
+                    }
+                }
+                    
+                doAttack(battleField);
+            }
+
+            if (banishInfo[i].type == 1)
+            {
+                doRecover(battleField, banishInfo[i].continuousCount);
+            }
+            
 
             printGems(battleField->gems, MAX_GEMS);
             printf("\n");
@@ -435,7 +454,7 @@ void fillGems(char* gems, int startGemNum, int endGemNum)
 {
     for (int i = 0; i < endGemNum; i++)
     {
-        gems[i + startGemNum] = rand() % 4 + 2;
+        gems[i + startGemNum] = rand() % 4 + 1;
     }
 }
 
@@ -497,4 +516,27 @@ void swapGem(char* fomerGems, int startGemNum, int endGemNum, char* gems, bool i
             }
         }
     }
+}
+
+void doRecover(BattleField* battleField, int continuousCount)
+{
+    float comboMultiplier = 1.5;
+    int chargePower = 20;
+    int fluctationCoefficient = rand() % 21 + 90;
+
+    for (int i = 1; i < (continuousCount - 3 + 1); i++)
+    {
+        comboMultiplier = comboMultiplier * 1.5;
+    }
+
+    chargePower = (int)(chargePower * comboMultiplier * fluctationCoefficient / 100);
+
+    battleField->party->sumHp += chargePower;
+
+    if (battleField->party->sumHp > battleField->party->sumMaxHp)
+    {
+        battleField->party->sumHp = battleField->party->sumMaxHp;
+    }
+    
+    printf("HPを%d回復。\n", chargePower);
 }
