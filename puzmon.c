@@ -6,11 +6,12 @@
 
 /*** 列挙型宣言 ***/
 enum {
+    EMPTY,
+    LIFE,
     FIRE,
     WATER,
     WIND,
-    EARTH,
-    EMPTY
+    EARTH
 };
 
 /*** 構造体型宣言 ***/
@@ -68,10 +69,12 @@ const int MAX_GEMS = 14;
 const int A_NUMBER = 65;
 
 const Elements ELEMENTS[] = {
-    {"$", 1},
-    {"~", 6},
-    {"@", 2},
-    {"#", 3}
+    {" ", 0}, // EMPTY
+    {"&", 5}, // LIFE
+    {"$", 1}, // FIRE
+    {"~", 6}, // WATER
+    {"@", 2}, // WIND
+    {"#", 3}  // EARTH
 };
 
 /*** プロトタイプ宣言 ***/
@@ -373,7 +376,7 @@ void fillGems(char* gems, int gemsCount)
 {
     for (int i = 0; i < gemsCount; i++)
     {
-        gems[i] = rand() % 4;
+        gems[i] = rand() % 4 + 2;
     }
 }
 
