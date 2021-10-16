@@ -180,6 +180,50 @@ int checkBanishable(char* gems, BanishInfo* banishInfo)
     return continuousChunkCount;
 }
 
+int shiftGems(int continuousChunkCount, BattleField* battleField, BanishInfo* banishInfo)
+{
+    // 黒gemの動かす先 ＝ gem配列の一番右側。
+    int gemDestinationNum = MAX_GEMS - 1;
+
+    // 最初に動かす黒gemの番号の初期値を設定。
+    int moveGemNum = MAX_GEMS - 1;
+
+    for (int i = 0; i < continuousChunkCount; i++)
+    {
+        for (int j = 0; j < banishInfo[i].continuousCount; j++)
+        {
+            *(banishInfo[i].startContinuousAddr + j) = 0;
+        }
+
+        printGems(battleField->gems, MAX_GEMS);
+        printf("\n");
+
+        doAttack(battleField);
+        
+        printGems(battleField->gems, MAX_GEMS);
+        printf("\n");
+
+        moveGemNum = (int)(banishInfo[i].startContinuousAddr + banishInfo[i].continuousCount - 1 - battleField->gems);
+
+        if (moveGemNum < gemDestinationNum)
+        {
+            for (int j = 0; j < banishInfo[i].continuousCount; j++)
+            {
+                moveGem((moveGemNum - j), (gemDestinationNum - j), battleField->gems, false);
+                printGems(battleField->gems, MAX_GEMS);
+                printf("\n");
+            }
+
+            // 黒gemの動かし先番号を書き換える。
+            gemDestinationNum = gemDestinationNum - banishInfo[i].continuousCount;
+        }
+
+        printf("最初に動かすgem：%d 次に黒gemが動くとしたら%d番目へ動く。\n", (int)(banishInfo[i].startContinuousAddr + banishInfo[i].continuousCount - 1 - battleField->gems), gemDestinationNum);
+    }
+
+    return gemDestinationNum;
+}
+
 void evaluateGems(BattleField* battleField)
 {
     // gemが1列当たり並ぶ列 ÷ 3 + 1 以上の配列は入りようがない。
@@ -190,45 +234,8 @@ void evaluateGems(BattleField* battleField)
 
     if (continuousChunkCount > 0)
     {
-        // 黒gemの動かす先 ＝ gem配列の一番右側。
-        int gemDestinationNum = MAX_GEMS - 1;
-
-        // 最初に動かす黒gemの番号の初期値を設定。
-        int moveGemNum = MAX_GEMS - 1;
-
-        for (int i = 0; i < continuousChunkCount; i++)
-        {
-            for (int j = 0; j < banishInfo[i].continuousCount; j++)
-            {
-                *(banishInfo[i].startContinuousAddr + j) = 0;
-            }
-
-            printGems(battleField->gems, MAX_GEMS);
-            printf("\n");
-
-            doAttack(battleField);
-            
-            printGems(battleField->gems, MAX_GEMS);
-            printf("\n");
-
-            moveGemNum = (int)(banishInfo[i].startContinuousAddr + banishInfo[i].continuousCount - 1 - battleField->gems);
-
-            if (moveGemNum < gemDestinationNum)
-            {
-                for (int j = 0; j < banishInfo[i].continuousCount; j++)
-                {
-                    moveGem((moveGemNum - j), (gemDestinationNum - j), battleField->gems, false);
-                    printGems(battleField->gems, MAX_GEMS);
-                    printf("\n");
-                }
-
-                // 黒gemの動かし先番号を書き換える。
-                gemDestinationNum = gemDestinationNum - banishInfo[i].continuousCount;
-            }
-
-            printf("最初に動かすgem：%d 次に黒gemが動くとしたら%d番目へ動く。\n", (int)(banishInfo[i].startContinuousAddr + banishInfo[i].continuousCount - 1 - battleField->gems), gemDestinationNum);
-        }
-        
+        // 黒gem（＝ブランク部分）を一番右側へ移動させる。
+        int newEndGemNum = shiftGems(continuousChunkCount, battleField, banishInfo);   
     }
 }
 
