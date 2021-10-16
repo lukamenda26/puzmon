@@ -142,23 +142,43 @@ void doAttack(BattleField* battleField)
 
 void checkBanishable(char* gems)
 {
-    char temporaryStartContinuousAddr[1024];
-    printf("%p\n", &temporaryStartContinuousAddr);
-    for (int i = 0; i < MAX_GEMS; i++)
+    int initialNum = EMPTY;
+    char* startContinuousAddr;
+    int continuousCount = 1;
+
+    printf("%p\n", &initialNum);
+
+    for (int i = 1; i < MAX_GEMS; i++)
     {
-        if (gems[i] == gems[i + 1])
+        if (gems[i - 1] == gems[i])
         {
-            strcpy(temporaryStartContinuousAddr, &gems[i]);
-            printf("%d\n", *temporaryStartContinuousAddr);
+            continuousCount++;
+            if (initialNum != gems[i])
+            {
+                startContinuousAddr = &gems[i - 1];
+                initialNum = gems[i];
+                printf("%d番目のループのinitialNum：%d gem:%d\n", i, initialNum, gems[i]);
+            }
+        }
+        else if (continuousCount < 3)
+        {
+            continuousCount = 1;
+            continue;
+        }
+        else
+        {
             break;
         }
+        
     }
+    printf("タイプ：%d\n開始位置のアドレス：%p\n開始位置の値：%d\n連続数：%d\n", initialNum, startContinuousAddr, *startContinuousAddr, continuousCount);
     printGems(gems, MAX_GEMS);
     printf("\n");
 }
 
 void evaluateGems(BattleField* battleField)
 {
+    // BanishInfo newBanishInfo = checkBanishable(battleField->gems);
     checkBanishable(battleField->gems);
     doAttack(battleField);
 }
@@ -304,9 +324,9 @@ int main(int argc, char** argv)
 
     Monster partyMonster[] = {
         {"朱雀", 150, 150, FIRE, 25, 10},
+        {"玄武", 150, 150, WATER, 20, 15},
         {"青龍", 150, 150, WIND, 15, 10},
-        {"白虎", 150, 150, EARTH, 20, 5},
-        {"玄武", 150, 150, WATER, 20, 15}
+        {"白虎", 150, 150, EARTH, 20, 5}
     };
     Party newParty = organizeParty(argv[1], partyMonster);
 
