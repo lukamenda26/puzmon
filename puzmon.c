@@ -169,7 +169,7 @@ int checkBanishable(char* gems, BanishInfo* banishInfo)
             if (continuousCount >= 3)
             {
                 banishInfo[continuousChunkCount].type = initialNum;
-                banishInfo[continuousChunkCount].startContinuousAddr = &gems[i - continuousCount + 1];
+                banishInfo[continuousChunkCount].startContinuousAddr = &gems[i - continuousCount];
                 banishInfo[continuousChunkCount].continuousCount = continuousCount;
 
                 continuousChunkCount++;
@@ -195,7 +195,19 @@ void evaluateGems(BattleField* battleField)
 
     int continuousChunkCount = checkBanishable(battleField->gems, banishInfo);
     printf("%d連続\n", continuousChunkCount);
-    doAttack(battleField);
+
+    if (continuousChunkCount > 0)
+    {
+        for (int i = 0; i < continuousChunkCount; i++)
+        {
+            for (int j = 0; j < banishInfo[i].continuousCount; j++)
+            {
+                *(banishInfo[i].startContinuousAddr + j) = 0;
+            }
+        }
+        
+        doAttack(battleField);
+    }
 }
 
 void onPlayerTurn(BattleField* battleField)
