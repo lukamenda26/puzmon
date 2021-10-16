@@ -9,7 +9,8 @@ enum {
     FIRE,
     WATER,
     WIND,
-    EARTH
+    EARTH,
+    EMPTY
 };
 
 /*** 構造体型宣言 ***/
@@ -51,6 +52,14 @@ typedef struct
     Monster* enemyMonsterAddr;
     char* gems;
 } BattleField;
+
+typedef struct
+{
+    int type;
+    char* startContinuousAddr;
+    int continuousCount;
+} BanishInfo;
+
 
 
 /*** グローバル定数の宣言 ***/
@@ -131,8 +140,26 @@ void doAttack(BattleField* battleField)
     (*battleField).enemyMonsterAddr->hp -= DUMMY_DAMAGE;
 }
 
+void checkBanishable(char* gems)
+{
+    char temporaryStartContinuousAddr[1024];
+    printf("%p\n", &temporaryStartContinuousAddr);
+    for (int i = 0; i < MAX_GEMS; i++)
+    {
+        if (gems[i] == gems[i + 1])
+        {
+            strcpy(temporaryStartContinuousAddr, &gems[i]);
+            printf("%d\n", *temporaryStartContinuousAddr);
+            break;
+        }
+    }
+    printGems(gems, MAX_GEMS);
+    printf("\n");
+}
+
 void evaluateGems(BattleField* battleField)
 {
+    checkBanishable(battleField->gems);
     doAttack(battleField);
 }
 
