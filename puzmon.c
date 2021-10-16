@@ -140,10 +140,12 @@ void doAttack(BattleField* battleField)
     (*battleField).enemyMonsterAddr->hp -= DUMMY_DAMAGE;
 }
 
-void checkBanishable(char* gems)
+int checkBanishable(char* gems, BanishInfo* banishInfo)
 {
+    // 3連続以上の塊の存在数 ＝  返り値。
+    int continuousChunkCount = 0;
+
     int initialNum = EMPTY;
-    char* startContinuousAddr;
     int continuousCount = 1;
 
     printf("%p\n", &initialNum);
@@ -155,31 +157,41 @@ void checkBanishable(char* gems)
             continuousCount++;
             if (initialNum != gems[i])
             {
-                startContinuousAddr = &gems[i - 1];
                 initialNum = gems[i];
                 printf("%d番目のループのinitialNum：%d gem:%d\n", i, initialNum, gems[i]);
             }
         }
-        else if (continuousCount < 3)
+        else
         {
+            if (continuousCount >= 3)
+            {
+                banishInfo[continuousChunkCount].type = initialNum;
+                banishInfo[continuousChunkCount].startContinuousAddr = &gems[i - continuousCount + 1];
+                banishInfo[continuousChunkCount].continuousCount = continuousCount;
+
+                continuousChunkCount++;
+            }
             continuousCount = 1;
             continue;
         }
-        else
-        {
-            break;
-        }
         
     }
-    printf("タイプ：%d\n開始位置のアドレス：%p\n開始位置の値：%d\n連続数：%d\n", initialNum, startContinuousAddr, *startContinuousAddr, continuousCount);
+
+    printf("タイプ：%d\n開始位置のアドレス：%p\n開始位置の値：%d\n連続数：%d\n", banishInfo[0].type, banishInfo[0].startContinuousAddr, gems[3], banishInfo[0].continuousCount);
     printGems(gems, MAX_GEMS);
     printf("\n");
+
+    return continuousChunkCount;
 }
 
 void evaluateGems(BattleField* battleField)
 {
-    // BanishInfo newBanishInfo = checkBanishable(battleField->gems);
-    checkBanishable(battleField->gems);
+    // gemが1列当たり並ぶ列 ÷ 3 + 1 以上の配列は入りようがない。
+    int maxContinuous = MAX_GEMS / 3 + 1;
+    BanishInfo banishInfo[maxContinuous];
+
+    int continuousChunkCount = checkBanishable(battleField->gems, banishInfo);
+    printf("%d連続\n", continuousChunkCount);
     doAttack(battleField);
 }
 
