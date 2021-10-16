@@ -81,7 +81,7 @@ const Elements ELEMENTS[] = {
 void printMonsterName(Monster*);
 void fillGems(char*, int);
 void printGems(char*, int);
-void moveGem(char*, char*);
+void moveGem(int, int, char*);
 void swapGem(char*, int, int, char*);
 
 /*** 関数宣言 ***/
@@ -204,9 +204,9 @@ void evaluateGems(BattleField* battleField)
             {
                 *(banishInfo[i].startContinuousAddr + j) = 0;
             }
+
+            doAttack(battleField);
         }
-        
-        doAttack(battleField);
     }
 }
 
@@ -253,7 +253,10 @@ void onPlayerTurn(BattleField* battleField)
         isVarid = checkValidCommand(command);
     }
 
-    moveGem(command, battleField->gems);
+    int startNum = command[0] - A_NUMBER;
+    int endNum = command[1] - A_NUMBER;
+
+    moveGem(startNum, endNum, battleField->gems);
     
     printf("\n");
 
@@ -404,11 +407,8 @@ void printGems(char* gems, int gemsCount)
     
 }
 
-void moveGem(char* fromTo, char* gems)
+void moveGem(int firstGemNum, int secondGemNum, char* gems)
 {
-    int firstGemNum = fromTo[0] - A_NUMBER;
-    int secondGemNum = fromTo[1] - A_NUMBER;
-
     char fomerGems[1024];
     strcpy(fomerGems, &gems[firstGemNum]);
 
