@@ -167,14 +167,14 @@ void doAttack(BattleField* battleField, Monster* attackMonster, int continuousCo
     (*battleField).enemyMonsterAddr->hp -= damage;
 }
 
-int checkBanishable(char* gems, BanishInfo* banishInfo)
+bool checkBanishable(char* gems, BanishInfo* banishInfo)
 {
     // 最後に3連続以上があった場合に必ず黒消しを行えるよう、
     // 14つのgemの最後尾+1の配列格納場所に黒gemを格納。
     gems[MAX_GEMS] = EMPTY;
 
     // 3連続以上の塊の存在数 ＝  返り値。
-    int continuousChunkCount = 0;
+    bool shouldBanish = false;
 
     int initialNum = EMPTY;
     int continuousCount = 1;
@@ -197,7 +197,7 @@ int checkBanishable(char* gems, BanishInfo* banishInfo)
                 banishInfo->startContinuousAddr = &gems[i - continuousCount];
                 banishInfo->continuousCount = continuousCount;
 
-                continuousChunkCount++;
+                shouldBanish = true;
                 break;
             }
             continuousCount = 1;
@@ -206,10 +206,10 @@ int checkBanishable(char* gems, BanishInfo* banishInfo)
         
     }
 
-    return continuousChunkCount;
+    return shouldBanish;
 }
 
-int shiftGems(int continuousChunkCount, BattleField* battleField, BanishInfo* banishInfo)
+int shiftGems(BattleField* battleField, BanishInfo* banishInfo)
 {
     // 黒gemの動かす先 ＝ gem配列の一番右側。
     int gemDestinationNum = MAX_GEMS - 1;
@@ -220,13 +220,13 @@ int shiftGems(int continuousChunkCount, BattleField* battleField, BanishInfo* ba
     // 最初に動く黒gemのアドレス指定用変数。
     int movedGemCount = 0;
 
-    for (int i = 0; i < continuousChunkCount; i++)
-    {
-        moveGemNum = (int)(banishInfo[i].startContinuousAddr + banishInfo[i].continuousCount - 1 - battleField->gems - movedGemCount);
+    // for (int i = 0; i < continuousChunkCount; i++)
+    // {
+        moveGemNum = (int)(banishInfo->startContinuousAddr + banishInfo->continuousCount - 1 - battleField->gems - movedGemCount);
 
         if (moveGemNum < gemDestinationNum)
         {
-            for (int j = 0; j < banishInfo[i].continuousCount; j++)
+            for (int j = 0; j < banishInfo->continuousCount; j++)
             {
                 moveGem((moveGemNum - j), (gemDestinationNum - j), battleField->gems, false);
                 printGems(battleField->gems, MAX_GEMS);
@@ -235,12 +235,12 @@ int shiftGems(int continuousChunkCount, BattleField* battleField, BanishInfo* ba
         }
         
         // 黒gemの動かし先番号を書き換える。
-        gemDestinationNum = gemDestinationNum - banishInfo[i].continuousCount;
+        gemDestinationNum = gemDestinationNum - banishInfo->continuousCount;
 
-        movedGemCount += banishInfo[i].continuousCount;
+        movedGemCount += banishInfo->continuousCount;
 
-        printf("最初に動かすgem：%d 次に黒gemが動くとしたら%d番目へ動く。\n", (int)(banishInfo[i].startContinuousAddr + banishInfo[i].continuousCount - 1 - battleField->gems), gemDestinationNum);
-    }
+        printf("最初に動かしたgem：%d 次に黒gemが動くとしたら%d番目へ動く。\n", (int)(banishInfo->startContinuousAddr + banishInfo->continuousCount - 1 - battleField->gems), gemDestinationNum);
+    // }
 
     return gemDestinationNum;
 }
@@ -252,10 +252,9 @@ void evaluateGems(BattleField* battleField)
     // BanishInfo banishInfo[maxContinuous];
     BanishInfo banishInfo;
 
-    int continuousChunkCount = checkBanishable(battleField->gems, &banishInfo);
-    printf("%d\n", continuousChunkCount);
+    bool shouldBanish = checkBanishable(battleField->gems, &banishInfo);
 
-    if (continuousChunkCount > 0)
+    if (shouldBanish)
     {
         // for (int i = 0; i < continuousChunkCount; i++)
         // {
@@ -291,7 +290,7 @@ void evaluateGems(BattleField* battleField)
         // }
     
         // 黒gem（＝ブランク部分）を一番右側へ移動させる。
-        int newEndGemNum = shiftGems(continuousChunkCount, battleField, &banishInfo);
+        int newEndGemNum = shiftGems(battleField, &banishInfo);
 
         // 黒gem部分を色付きgemで埋める。
         fillGems(battleField->gems, (newEndGemNum + 1), MAX_GEMS);
