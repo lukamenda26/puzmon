@@ -91,7 +91,7 @@ void printGems(char*, int);
 void moveGem(int, int, char*, bool);
 void swapGem(char*, int, int, char*, bool);
 void blurPower(int*);
-void amplifyPower(int*, int, int)
+void amplifyPower(int*, int, int);
 void doRecover(BattleField*, int);
 
 /*** 関数宣言 ***/
@@ -146,13 +146,19 @@ bool checkValidCommand(char* command)
     return returnBal;
 }
 
-void doAttack(BattleField* battleField, Monster* partyMonster)
+void doAttack(BattleField* battleField, Monster* attackMonster, int continuousCount)
 {
-    const double ATTRIBUTE = ELEMENT_BOOST[partyMonster->type - 2][battleField->enemyMonsterAddr->type - 2];
-    printf("属性補正値：%f\n", ATTRIBUTE);
-    const int DUMMY_DAMAGE = 80;
-    printf("ダミー攻撃で%dのダメージを与えた。\n\n", DUMMY_DAMAGE);
-    (*battleField).enemyMonsterAddr->hp -= DUMMY_DAMAGE;
+    const double ATTRIBUTE = ELEMENT_BOOST[attackMonster->type - 2][battleField->enemyMonsterAddr->type - 2];
+    int damage = (int)((attackMonster->attack - battleField->enemyMonsterAddr->defence) * ATTRIBUTE);
+
+    // 宝石消滅数とコンボ数に応じてダメージを増幅させる。
+    amplifyPower(&damage, continuousCount, 1);
+
+    // ダメージを±10%増加させる。
+    blurPower(&damage);
+
+    printf("ダミー攻撃で%dのダメージを与えた。\n\n", damage);
+    (*battleField).enemyMonsterAddr->hp -= damage;
 }
 
 int checkBanishable(char* gems, BanishInfo* banishInfo)
@@ -260,7 +266,7 @@ void evaluateGems(BattleField* battleField)
                     {
                         printMonsterName(&battleField->party->partyMonsterAddr[k]);
                         printf("の攻撃!!\n");
-                        doAttack(battleField, &battleField->party->partyMonsterAddr[k]);
+                        doAttack(battleField, &battleField->party->partyMonsterAddr[k], banishInfo[i].continuousCount);
                     }
                 }
             }
