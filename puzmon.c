@@ -342,12 +342,10 @@ void onPlayerTurn(BattleField* battleField)
     // gem消滅情報を格納する構造体を定義。
     BanishInfo newBanishInfo;
 
-    bool shouldFillUp = false;
     int newEndGemNum = MAX_GEMS - 1;
+    bool shouldFillUp = evaluateGems(battleField, &newBanishInfo, MAX_GEMS);
 
-    shouldFillUp = evaluateGems(battleField, &newBanishInfo, MAX_GEMS);
-
-    if (shouldFillUp)
+    while (shouldFillUp)
     {
         // 黒gem（＝ブランク部分）を一番右側へ移動させる。
         newEndGemNum = shiftGems(battleField, &newBanishInfo);
@@ -356,19 +354,8 @@ void onPlayerTurn(BattleField* battleField)
         fillGems(battleField->gems, (newEndGemNum + 1), MAX_GEMS);
         printGems(battleField->gems, MAX_GEMS);
         printf("\n");
-    }
 
-    shouldFillUp = evaluateGems(battleField, &newBanishInfo, MAX_GEMS);
-
-    if (shouldFillUp)
-    {
-        // 黒gem（＝ブランク部分）を一番右側へ移動させる。
-        newEndGemNum = shiftGems(battleField, &newBanishInfo);
-
-        // 黒gem部分を色付きgemで埋める。
-        fillGems(battleField->gems, (newEndGemNum + 1), MAX_GEMS);
-        printGems(battleField->gems, MAX_GEMS);
-        printf("\n");
+        shouldFillUp = evaluateGems(battleField, &newBanishInfo, MAX_GEMS);
     }
 }
 
