@@ -77,6 +77,13 @@ const Elements ELEMENTS[] = {
     {"#", 3}  // EARTH
 };
 
+const double ELEMENT_BOOST[] = [
+    [1.0, 0.5, 2.0, 1.0], // FIREが〜へ攻撃
+    [2.0, 1.0, 1.0, 0.5], // WATERが〜へ攻撃
+    [0.5, 1.0, 1.0, 2.0], // WINDが〜へ攻撃
+    [1.0, 2.0, 0.5, 1.0]  // EARTHが〜へ攻撃
+];
+
 /*** プロトタイプ宣言 ***/
 void printMonsterName(Monster*);
 void fillGems(char*, int, int);
