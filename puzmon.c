@@ -90,6 +90,7 @@ void fillGems(char*, int, int);
 void printGems(char*, int);
 void moveGem(int, int, char*, bool);
 void swapGem(char*, int, int, char*, bool);
+void blurPower(int*, int);
 void doRecover(BattleField*, int);
 
 /*** 関数宣言 ***/
@@ -526,18 +527,26 @@ void swapGem(char* fomerGems, int startGemNum, int endGemNum, char* gems, bool i
     }
 }
 
+// -range% 〜 + range% の値をpowerに加算する。
+void blurPower(int* power, int range)
+{
+    int fluctationCoefficient = rand() % (range * 2 + 1) + 90;
+
+    *power = *power * fluctationCoefficient / 100;
+}
+
 void doRecover(BattleField* battleField, int continuousCount)
 {
     float comboMultiplier = 1.5;
     int chargePower = 20;
-    int fluctationCoefficient = rand() % 21 + 90;
 
     for (int i = 1; i < (continuousCount - 3 + 1); i++)
     {
         comboMultiplier = comboMultiplier * 1.5;
     }
 
-    chargePower = (int)(chargePower * comboMultiplier * fluctationCoefficient / 100);
+    chargePower = (int)(chargePower * comboMultiplier);
+    blurPower(&chargePower, 10);
 
     battleField->party->sumHp += chargePower;
 
