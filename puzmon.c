@@ -245,57 +245,48 @@ int shiftGems(BattleField* battleField, BanishInfo* banishInfo)
     return gemDestinationNum;
 }
 
-void evaluateGems(BattleField* battleField)
+void evaluateGems(BattleField* battleField, BanishInfo* banishInfo)
 {
     // gemが1列当たり並ぶ列 ÷ 3 + 1 以上の配列は入りようがない。
     // int maxContinuous = MAX_GEMS / 3 + 1;
     // BanishInfo banishInfo[maxContinuous];
-    BanishInfo banishInfo;
 
-    bool shouldBanish = checkBanishable(battleField->gems, &banishInfo);
+    bool shouldBanish = checkBanishable(battleField->gems, banishInfo);
 
     if (shouldBanish)
     {
         // for (int i = 0; i < continuousChunkCount; i++)
         // {
-            for (int j = 0; j < banishInfo.continuousCount; j++)
+            for (int j = 0; j < banishInfo->continuousCount; j++)
             {
-                *(banishInfo.startContinuousAddr + j) = 0;
+                *(banishInfo->startContinuousAddr + j) = 0;
             }
 
             printGems(battleField->gems, MAX_GEMS);
             printf("\n");
 
-            if (banishInfo.type > 1)
+            if (banishInfo->type > 1)
             {
                 for (int k = 0; k < PARTY_MONSTER_COUNT; k++)
                 {
-                    if (battleField->party->partyMonsterAddr[k].type == banishInfo.type)
+                    if (battleField->party->partyMonsterAddr[k].type == banishInfo->type)
                     {
                         printMonsterName(&battleField->party->partyMonsterAddr[k]);
                         printf("の攻撃!!\n");
-                        doAttack(battleField, &battleField->party->partyMonsterAddr[k], banishInfo.continuousCount);
+                        doAttack(battleField, &battleField->party->partyMonsterAddr[k], banishInfo->continuousCount);
                     }
                 }
             }
 
-            if (banishInfo.type == 1)
+            if (banishInfo->type == 1)
             {
-                doRecover(battleField, banishInfo.continuousCount);
+                doRecover(battleField, banishInfo->continuousCount);
             }
             
 
             printGems(battleField->gems, MAX_GEMS);
             printf("\n");
         // }
-    
-        // 黒gem（＝ブランク部分）を一番右側へ移動させる。
-        int newEndGemNum = shiftGems(battleField, &banishInfo);
-
-        // 黒gem部分を色付きgemで埋める。
-        fillGems(battleField->gems, (newEndGemNum + 1), MAX_GEMS);
-        printGems(battleField->gems, MAX_GEMS);
-        printf("\n");
     }
 }
 
@@ -347,7 +338,18 @@ void onPlayerTurn(BattleField* battleField)
 
     moveGem(startNum, endNum, battleField->gems, true);
 
-    evaluateGems(battleField);
+    // gem消滅情報を格納する構造体を定義。
+    BanishInfo newBanishInfo;
+
+    evaluateGems(battleField, &newBanishInfo);
+
+    // 黒gem（＝ブランク部分）を一番右側へ移動させる。
+    int newEndGemNum = shiftGems(battleField, &newBanishInfo);
+
+    // 黒gem部分を色付きgemで埋める。
+    fillGems(battleField->gems, (newEndGemNum + 1), MAX_GEMS);
+    printGems(battleField->gems, MAX_GEMS);
+    printf("\n");
 }
 
 void doEnemyAttack(BattleField* battleField)
