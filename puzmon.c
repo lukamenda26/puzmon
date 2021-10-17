@@ -157,6 +157,12 @@ void doAttack(BattleField* battleField, Monster* attackMonster, int continuousCo
     // ダメージを±10%増加させる。
     blurPower(&damage);
 
+    if (damage <= 0)
+    {
+        damage = 1;
+    }
+    
+
     printf("ダミー攻撃で%dのダメージを与えた。\n\n", damage);
     (*battleField).enemyMonsterAddr->hp -= damage;
 }
@@ -342,12 +348,26 @@ void onPlayerTurn(BattleField* battleField)
     evaluateGems(battleField);
 }
 
+void doEnemyAttack(BattleField* battleField)
+{
+    int damage = battleField->enemyMonsterAddr->attack - battleField->party->avgDefence;
+
+    // ダメージを±10%増加させる。
+    blurPower(&damage);
+
+    if (damage <= 0)
+    {
+        damage = 1;
+    }
+
+    printf("%dのダメージを受けた。\n\n", damage);
+    (*battleField).party->sumHp -= damage;
+}
+
 void onEnemyTurn(BattleField* battleField)
 {
-    const int DUMMY_MY_DAMAGE = 20;
     printf("【%sのターン】\n", (*battleField).enemyMonsterAddr->name);
-    printf("%dのダメージを受けた。\n\n", DUMMY_MY_DAMAGE);
-    (*battleField).party->sumHp -= DUMMY_MY_DAMAGE;
+    doEnemyAttack(battleField);
 }
 
 int doBattle(BattleField* battleField)
