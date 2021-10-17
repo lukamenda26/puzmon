@@ -92,7 +92,7 @@ void moveGem(int, int, char*, bool);
 void swapGem(char*, int, int, char*, bool);
 void blurPower(int*);
 void amplifyPower(int*, int, int);
-void doRecover(BattleField*, int);
+void doRecover(BattleField*, int, int*);
 
 /*** 関数宣言 ***/
 Party organizeParty(char* player, Monster* monster)
@@ -146,13 +146,13 @@ bool checkValidCommand(char* command)
     return returnBal;
 }
 
-void doAttack(BattleField* battleField, Monster* attackMonster, int continuousCount)
+void doAttack(BattleField* battleField, Monster* attackMonster, int continuousCount, int* combo)
 {
     const double ATTRIBUTE = ELEMENT_BOOST[attackMonster->type - 2][battleField->enemyMonsterAddr->type - 2];
     int damage = (int)((attackMonster->attack - battleField->enemyMonsterAddr->defence) * ATTRIBUTE);
 
     // 宝石消滅数とコンボ数に応じてダメージを増幅させる。
-    amplifyPower(&damage, continuousCount, 1);
+    amplifyPower(&damage, continuousCount, *combo);
 
     // ダメージを±10%増加させる。
     blurPower(&damage);
@@ -278,14 +278,14 @@ bool evaluateGems(BattleField* battleField, BanishInfo* banishInfo, int startEmp
                     {
                         printMonsterName(&battleField->party->partyMonsterAddr[k]);
                         printf("の攻撃!!\n");
-                        doAttack(battleField, &battleField->party->partyMonsterAddr[k], banishInfo->continuousCount);
+                        doAttack(battleField, &battleField->party->partyMonsterAddr[k], banishInfo->continuousCount, combo);
                     }
                 }
             }
 
             if (banishInfo->type == 1)
             {
-                doRecover(battleField, banishInfo->continuousCount);
+                doRecover(battleField, banishInfo->continuousCount, combo);
             }
             
 
@@ -586,7 +586,7 @@ void amplifyPower(int* power, int continuousGemsCount, int combo)
 {
     float multiplier = 1.5;
 
-    for (int i = 1; i < (continuousGemsCount - 3 + 1); i++)
+    for (int i = 1; i < (continuousGemsCount - 3 + combo); i++)
     {
         multiplier = multiplier * 1.5;
     }
@@ -594,12 +594,12 @@ void amplifyPower(int* power, int continuousGemsCount, int combo)
     *power = *power * (int)multiplier;
 }
 
-void doRecover(BattleField* battleField, int continuousCount)
+void doRecover(BattleField* battleField, int continuousCount, int* combo)
 {
     int chargePower = 20;
 
     // 宝石消滅数とコンボ数に応じてパワーを増幅させる。
-    amplifyPower(&chargePower, continuousCount, 1);
+    amplifyPower(&chargePower, continuousCount, *combo);
 
     // パワーを±10%増加させる。
     blurPower(&chargePower);
