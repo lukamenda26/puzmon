@@ -77,12 +77,12 @@ const Elements ELEMENTS[] = {
     {"#", 3}  // EARTH
 };
 
-const double ELEMENT_BOOST[] = [
-    [1.0, 0.5, 2.0, 1.0], // FIREが〜へ攻撃
-    [2.0, 1.0, 1.0, 0.5], // WATERが〜へ攻撃
-    [0.5, 1.0, 1.0, 2.0], // WINDが〜へ攻撃
-    [1.0, 2.0, 0.5, 1.0]  // EARTHが〜へ攻撃
-];
+const double ELEMENT_BOOST[4][4] = {
+    {1.0, 0.5, 2.0, 1.0}, // FIREが〜へ攻撃
+    {2.0, 1.0, 1.0, 0.5}, // WATERが〜へ攻撃
+    {0.5, 1.0, 1.0, 2.0}, // WINDが〜へ攻撃
+    {1.0, 2.0, 0.5, 1.0}  // EARTHが〜へ攻撃
+};
 
 /*** プロトタイプ宣言 ***/
 void printMonsterName(Monster*);
@@ -144,8 +144,10 @@ bool checkValidCommand(char* command)
     return returnBal;
 }
 
-void doAttack(BattleField* battleField)
+void doAttack(BattleField* battleField, Monster* partyMonster)
 {
+    const double ATTRIBUTE = ELEMENT_BOOST[partyMonster->type - 2][battleField->enemyMonsterAddr->type - 2];
+    printf("属性補正値：%f\n", ATTRIBUTE);
     const int DUMMY_DAMAGE = 80;
     printf("ダミー攻撃で%dのダメージを与えた。\n\n", DUMMY_DAMAGE);
     (*battleField).enemyMonsterAddr->hp -= DUMMY_DAMAGE;
@@ -256,10 +258,9 @@ void evaluateGems(BattleField* battleField)
                     {
                         printMonsterName(&battleField->party->partyMonsterAddr[k]);
                         printf("の攻撃!!\n");
+                        doAttack(battleField, &battleField->party->partyMonsterAddr[k]);
                     }
                 }
-                    
-                doAttack(battleField);
             }
 
             if (banishInfo[i].type == 1)
