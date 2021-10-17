@@ -167,19 +167,17 @@ void doAttack(BattleField* battleField, Monster* attackMonster, int continuousCo
     (*battleField).enemyMonsterAddr->hp -= damage;
 }
 
-bool checkBanishable(char* gems, BanishInfo* banishInfo)
+bool checkBanishable(char* gems, BanishInfo* banishInfo, int startEmptyNum)
 {
     // 最後に3連続以上があった場合に必ず黒消しを行えるよう、
     // 14つのgemの最後尾+1の配列格納場所に黒gemを格納。
-    gems[MAX_GEMS] = EMPTY;
+    gems[startEmptyNum] = EMPTY;
 
-    // 3連続以上の塊の存在数 ＝  返り値。
     bool shouldBanish = false;
-
     int initialNum = EMPTY;
     int continuousCount = 1;
 
-    for (int i = 1; i <= MAX_GEMS; i++)
+    for (int i = 1; i <= startEmptyNum; i++)
     {
         if (gems[i - 1] == gems[i])
         {
@@ -245,13 +243,13 @@ int shiftGems(BattleField* battleField, BanishInfo* banishInfo)
     return gemDestinationNum;
 }
 
-void evaluateGems(BattleField* battleField, BanishInfo* banishInfo)
+bool evaluateGems(BattleField* battleField, BanishInfo* banishInfo, int startEmptyNum)
 {
     // gemが1列当たり並ぶ列 ÷ 3 + 1 以上の配列は入りようがない。
     // int maxContinuous = MAX_GEMS / 3 + 1;
     // BanishInfo banishInfo[maxContinuous];
 
-    bool shouldBanish = checkBanishable(battleField->gems, banishInfo);
+    bool shouldBanish = checkBanishable(battleField->gems, banishInfo, startEmptyNum);
 
     if (shouldBanish)
     {
@@ -288,6 +286,9 @@ void evaluateGems(BattleField* battleField, BanishInfo* banishInfo)
             printf("\n");
         // }
     }
+
+    // 宝石消滅がある＝宝石の空き詰めが必要。
+    return shouldBanish;
 }
 
 void onPlayerTurn(BattleField* battleField)
@@ -341,15 +342,34 @@ void onPlayerTurn(BattleField* battleField)
     // gem消滅情報を格納する構造体を定義。
     BanishInfo newBanishInfo;
 
-    evaluateGems(battleField, &newBanishInfo);
+    bool shouldFillUp = false;
+    int newEndGemNum = MAX_GEMS - 1;
 
-    // 黒gem（＝ブランク部分）を一番右側へ移動させる。
-    int newEndGemNum = shiftGems(battleField, &newBanishInfo);
+    shouldFillUp = evaluateGems(battleField, &newBanishInfo, MAX_GEMS);
 
-    // 黒gem部分を色付きgemで埋める。
-    fillGems(battleField->gems, (newEndGemNum + 1), MAX_GEMS);
-    printGems(battleField->gems, MAX_GEMS);
-    printf("\n");
+    if (shouldFillUp)
+    {
+        // 黒gem（＝ブランク部分）を一番右側へ移動させる。
+        newEndGemNum = shiftGems(battleField, &newBanishInfo);
+
+        // 黒gem部分を色付きgemで埋める。
+        fillGems(battleField->gems, (newEndGemNum + 1), MAX_GEMS);
+        printGems(battleField->gems, MAX_GEMS);
+        printf("\n");
+    }
+
+    shouldFillUp = evaluateGems(battleField, &newBanishInfo, MAX_GEMS);
+
+    if (shouldFillUp)
+    {
+        // 黒gem（＝ブランク部分）を一番右側へ移動させる。
+        newEndGemNum = shiftGems(battleField, &newBanishInfo);
+
+        // 黒gem部分を色付きgemで埋める。
+        fillGems(battleField->gems, (newEndGemNum + 1), MAX_GEMS);
+        printGems(battleField->gems, MAX_GEMS);
+        printf("\n");
+    }
 }
 
 void doEnemyAttack(BattleField* battleField)
