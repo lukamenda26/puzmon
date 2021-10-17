@@ -554,10 +554,10 @@ void swapGem(char* fomerGems, int startGemNum, int endGemNum, char* gems, bool i
     }
 }
 
-// -10%〜+10% の値をpowerに加算する。
+// -20%〜+20% の値をpowerに加算する。
 void blurPower(int* power)
 {
-    int fluctationCoefficient = rand() % 21 + 90;
+    int fluctationCoefficient = rand() % 41 + 90;
 
     *power = *power * fluctationCoefficient / 100;
 }
