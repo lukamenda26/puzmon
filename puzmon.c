@@ -237,13 +237,13 @@ int shiftGems(BattleField* battleField, BanishInfo* banishInfo)
 
         movedGemCount += banishInfo->continuousCount;
 
-        printf("最初に動かしたgem：%d 次に黒gemが動くとしたら%d番目へ動く。\n", (int)(banishInfo->startContinuousAddr + banishInfo->continuousCount - 1 - battleField->gems), gemDestinationNum);
+        // printf("最初に動かしたgem：%d 次に黒gemが動くとしたら%d番目へ動く。\n", (int)(banishInfo->startContinuousAddr + banishInfo->continuousCount - 1 - battleField->gems), gemDestinationNum);
     // }
 
     return gemDestinationNum;
 }
 
-bool evaluateGems(BattleField* battleField, BanishInfo* banishInfo, int startEmptyNum)
+bool evaluateGems(BattleField* battleField, BanishInfo* banishInfo, int startEmptyNum, int* combo)
 {
     // gemが1列当たり並ぶ列 ÷ 3 + 1 以上の配列は入りようがない。
     // int maxContinuous = MAX_GEMS / 3 + 1;
@@ -253,6 +253,8 @@ bool evaluateGems(BattleField* battleField, BanishInfo* banishInfo, int startEmp
 
     if (shouldBanish)
     {
+        *combo = *combo + 1;
+        
         // for (int i = 0; i < continuousChunkCount; i++)
         // {
             for (int j = 0; j < banishInfo->continuousCount; j++)
@@ -262,6 +264,11 @@ bool evaluateGems(BattleField* battleField, BanishInfo* banishInfo, int startEmp
 
             printGems(battleField->gems, MAX_GEMS);
             printf("\n");
+
+            if (*combo > 1)
+            {
+                printf("%dコンボ!!\n", *combo);
+            }
 
             if (banishInfo->type > 1)
             {
@@ -343,7 +350,9 @@ void onPlayerTurn(BattleField* battleField)
     BanishInfo newBanishInfo;
 
     int newEndGemNum = MAX_GEMS - 1;
-    bool shouldFillUp = evaluateGems(battleField, &newBanishInfo, MAX_GEMS);
+    int combo = 0;
+
+    bool shouldFillUp = evaluateGems(battleField, &newBanishInfo, MAX_GEMS, &combo);
 
     while (shouldFillUp)
     {
@@ -355,7 +364,7 @@ void onPlayerTurn(BattleField* battleField)
         printGems(battleField->gems, MAX_GEMS);
         printf("\n");
 
-        shouldFillUp = evaluateGems(battleField, &newBanishInfo, MAX_GEMS);
+        shouldFillUp = evaluateGems(battleField, &newBanishInfo, MAX_GEMS, &combo);
     }
 }
 
@@ -602,5 +611,5 @@ void doRecover(BattleField* battleField, int continuousCount)
         battleField->party->sumHp = battleField->party->sumMaxHp;
     }
     
-    printf("HPを%d回復。\n", chargePower);
+    printf("HPを%d回復。\n\n", chargePower);
 }
