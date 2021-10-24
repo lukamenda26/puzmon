@@ -279,28 +279,6 @@ void onPlayerTurn(BattleField* battleField)
     }
 }
 
-void doEnemyAttack(BattleField* battleField)
-{
-    int damage = battleField->enemyMonsterAddr->attack - battleField->party->avgDefence;
-
-    // ダメージを±10%増加させる。
-    blurPower(&damage);
-
-    if (damage <= 0)
-    {
-        damage = 1;
-    }
-
-    printf("%dのダメージを受けた。\n\n", damage);
-    (*battleField).party->sumHp -= damage;
-}
-
-void onEnemyTurn(BattleField* battleField)
-{
-    printf("【%sのターン】\n", (*battleField).enemyMonsterAddr->name);
-    doEnemyAttack(battleField);
-}
-
 int doBattle(BattleField* battleField)
 {
     printMonsterName((*battleField).enemyMonsterAddr);
