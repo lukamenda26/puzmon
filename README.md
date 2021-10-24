@@ -8,14 +8,14 @@ https://book.impress.co.jp/books/1111101149
 巻末の解答例は見ていません。
 
 ## 動作手順
-1. 本ソースコードを`git clone`して、ソースコードがあるディレクトリ配下でpuzmon.cをコンパイル。
-1. 引数にプレイヤー名を指定して実行する。
+1. 本ソースコードを`git clone`して、ソースコードがあるディレクトリ配下で`make mainapp`コマンドを実行。するとコンパイルが走ってmainappファイルが作成される。
+1. `mainapp {ユーザー名}`の形式でコマンドを実行し、mainappファイルを実行する。
 
 以下はmacOSの場合の実行例である。
 
 ```
-% gcc gcc puzmon.c
-$ ./a.out lukamenda
+% make mainapp
+$ ./mainapp lukamenda
 *** Puzzle & Monsters ***
 lukamendaのパーティ(HP=600)は精霊の森ダンジョンに到着した。
 ＜パーティ編成＞----------
