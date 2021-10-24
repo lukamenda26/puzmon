@@ -3,7 +3,7 @@
 # include <string.h>
 # include <stdlib.h>
 # include <stdbool.h>
-# include "utilities.h"
+# include "declaration.h"
 
 /*** 関数宣言 ***/
 Party organizeParty(char* player, Monster* monster)

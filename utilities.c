@@ -2,7 +2,7 @@
 # include <string.h>
 # include <stdlib.h>
 # include <stdbool.h>
-# include "utilities.h"
+# include "declaration.h"
 
 /*** ユーティリティ関数宣言 ***/
 
