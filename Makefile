@@ -1,6 +1,6 @@
 CC = gcc
 PGNAME = mainapp
-OBJS = utilities.o enemyTurn.o puzmon.o
+OBJS = utilities.o enemyTurn.o playerTurn.o puzmon.o
 
 $(PGNAME): $(OBJS)
 	$(CC) -o $@ $^

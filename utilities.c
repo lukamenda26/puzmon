@@ -71,7 +71,7 @@ void swapGem(char* fomerGems, int startGemNum, int endGemNum, char* gems, bool i
             gems[i] = gems[i - 1];
             gems[i - 1] = fomerGems[0];
 
-            // FieMe::上に同じ。
+            // FixMe::上に同じ。
             if(isPrint)
             {
                 printGems(gems, MAX_GEMS);
