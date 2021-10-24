@@ -1,3 +1,11 @@
+/**
+ * @file puzmon.c
+ * @brief メイン実行ファイル
+ * @author lukamenda26
+ * @date 2021/10/25
+ * @details ダンジョンへ行ってバトルをする。
+*/
+
 /*** インクルード宣言 ***/
 # include <stdio.h>
 # include <string.h>
@@ -5,7 +13,13 @@
 # include <stdbool.h>
 # include "declaration.h"
 
-/*** 関数宣言 ***/
+/**
+ * @brief organizeParty
+ * @param player プレイヤー名。
+ * @param monster パーティーを構成するモンスター構造体配列の先頭アドレス。
+ * @return Party 生成されたパーティー構造体。
+ * @details パーティーを生成する。
+*/
 Party organizeParty(char* player, Monster* monster)
 {
     int sumHp = 0;
@@ -33,6 +47,13 @@ Party organizeParty(char* player, Monster* monster)
     return party;
 }
 
+/**
+ * @brief showParty
+ * @param party 表示するパーティー構造体の先頭アドレス。
+ * @return void
+ * @details パーティー情報をコンソールコマンド上に表示する。
+ * 
+*/
 void showParty(Party* party)
 {
     printf("＜パーティ編成＞----------\n");
@@ -46,6 +67,12 @@ void showParty(Party* party)
     printf("-----------------------\n\n");
 }
 
+/**
+ * @brief doBattle
+ * @param battleField BattleField構造体（バトルフィールド情報を格納）の先頭アドレス。
+ * @return int 倒したモンスターの数。
+ * @details プレイヤーターンと敵ターンを交互に実行してバトル処理の流れを担う。
+ */
 int doBattle(BattleField* battleField)
 {
     printMonsterName((*battleField).enemyMonsterAddr);
@@ -71,6 +98,13 @@ int doBattle(BattleField* battleField)
     return 0;
 }
 
+/**
+ * @brief goDungeon
+ * @param party パーティー構造体（＝パーティー情報）。
+ * @param dungeon ダンジョン構造体（＝今いるダンジョンの情報）。
+ * @return int 倒したモンスターの数。
+ * @details ダンジョンへ行ってバトルを行う一連の流れを担う。
+*/
 int goDungeon(Party* party, Dungeon* dungeon)
 {
     printf("%sのパーティ(HP=%d)は%sダンジョンに到着した。\n", (*party).playerName, (*party).sumHp, (*dungeon).dungeonName);
@@ -102,6 +136,13 @@ int goDungeon(Party* party, Dungeon* dungeon)
     return defeatedMonsterCount;
 }
 
+/**
+ * @brief main
+ * @param argc
+ * @param argv 実行時に入力されたプレイヤー名。
+ * @return int
+ * @details メイン実行関数。
+ */
 int main(int argc, char** argv)
 {
     char* player = argv[1];
